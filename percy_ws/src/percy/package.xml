@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>percy</name>
+  <version>0.1.0</version>
+  <description>PERCY — multimodal robot interaction (timestamp-aligned A/V recording, etc.)</description>
+
+  <maintainer email="zhijinMeng@users.noreply.github.com">zhijinMeng</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>audio_common_msgs</build_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>audio_common_msgs</exec_depend>
+</package>

@@ -1,0 +1,28 @@
+# Catkin
+**/build/
+**/devel/
+**/install/
+**/logs/
+.catkin_tools/
+
+# Data / recordings
+percy_data/
+**/DATA/
+**/*.bag
+
+# Python / Node
+**/__pycache__/
+**/*.pyc
+**/node_modules/
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Secrets
+.env
+**/OPENAI_API_KEY*
