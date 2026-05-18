@@ -26,6 +26,7 @@ from __future__ import print_function
 import json
 import os
 import subprocess
+import sys
 import threading
 
 import cv2
@@ -86,6 +87,7 @@ class StampAlignedRecorder(object):
         self._had_image = False
 
         self._recording = False
+        self._shutting_down = False
         self._last_img_wall = None
         self._last_img_stamp = None
         self._frame_count = 0
@@ -213,6 +215,8 @@ class StampAlignedRecorder(object):
         return dt
 
     def _image_cb(self, msg):
+        if self._shutting_down:
+            return
         self._had_image = True
         stamp = msg.header.stamp
 
@@ -264,6 +268,8 @@ class StampAlignedRecorder(object):
             rospy.loginfo("Recording -> %s , %s", self._wav_path, self._mp4_path)
 
         pcm = self._pop_audio(nbytes)
+        if self._wf is None:
+            return
         self._wf.writeframes(pcm)
 
         if self._frame_size is not None and (w, h) != self._frame_size:
@@ -312,68 +318,58 @@ class StampAlignedRecorder(object):
         fps = float(self._frame_count) / span
         return max(0.25, min(fps, 120.0))
 
-    def _finalize_mp4(self):
-        """H.264 transcode + fix MP4 frame rate so duration matches stamp-aligned audio."""
+    def _spawn_finalize_background(self, meta):
+        """Detached ffmpeg so roslaunch SIGTERM (~15s) does not kill long finalize."""
         if self._frame_count <= 0 or not os.path.isfile(self._mp4_path):
-            return None
+            return
 
-        do_h264 = bool(rospy.get_param("~video_transcode_h264", True))
-        do_timeline = bool(rospy.get_param("~video_fix_timeline", True))
-        fps = self._stamp_span_fps() if do_timeline else None
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        helper = os.path.join(script_dir, "finalize_recording.py")
+        if not os.path.isfile(helper):
+            rospy.logwarn("finalize_recording.py not found; MP4 may not match audio duration")
+            return
 
-        codec = self._probe_video_codec()
-        need_h264 = do_h264 and codec != "h264"
-        need_fps = fps is not None
+        done_path = os.path.join(self._out_dir, "finalize.done")
+        log_path = os.path.join(self._out_dir, "finalize.log")
+        for p in (done_path, self._mp4_path + ".finalize.tmp.mp4"):
+            try:
+                if os.path.isfile(p):
+                    os.remove(p)
+            except OSError:
+                pass
 
-        if not need_h264 and not need_fps:
-            rospy.loginfo("MP4 finalize skipped (already h264, timeline ok)")
-            return fps
-
-        ffmpeg = str(rospy.get_param("~video_ffmpeg_path", "ffmpeg"))
-        tmp_path = self._mp4_path + ".finalize.tmp.mp4"
-        cmd = [ffmpeg, "-y", "-i", self._mp4_path]
-        if need_fps:
-            cmd.extend(["-r", "{:.6f}".format(fps)])
-        cmd.extend(
-            [
-                "-c:v",
-                "libx264",
-                "-pix_fmt",
-                "yuv420p",
-                "-movflags",
-                "+faststart",
-                "-an",
-                tmp_path,
-            ]
-        )
+        span = meta.get("video_stamp_span_sec") or 0.0
         rospy.loginfo(
-            "Finalizing %s: h264=%s timeline_fps=%.4f (codec=%s fourcc=%s frames=%d)",
-            self._mp4_path,
-            need_h264 or codec == "h264",
-            fps or -1.0,
-            codec or "unknown",
-            self._video_fourcc_used,
+            "Finalize queued (background): span=%.1fs frames=%d — roslaunch 会先退出，请等待完成",
+            span,
             self._frame_count,
         )
-        try:
-            subprocess.check_call(cmd, timeout=600)
-            os.replace(tmp_path, self._mp4_path)
-            rospy.loginfo("MP4 finalize done: %s", self._mp4_path)
-            return fps
-        except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired) as e:
-            rospy.logwarn(
-                "MP4 finalize failed; keeping original (%s): %s",
-                self._mp4_path,
-                e,
+        rospy.loginfo("  log: tail -f %s", log_path)
+        rospy.loginfo(
+            "  wait: bash %s/wait_finalize.sh %s",
+            script_dir,
+            self._out_dir,
+        )
+
+        with open(log_path, "w") as logf:
+            subprocess.Popen(
+                [sys.executable, helper, self._meta_path],
+                stdout=logf,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+                close_fds=True,
             )
-            if os.path.isfile(tmp_path):
-                try:
-                    os.remove(tmp_path)
-                except OSError:
-                    pass
-            return None
 
     def _shutdown(self):
+        self._shutting_down = True
+        try:
+            self._image_sub.unregister()
+        except Exception:
+            pass
+        try:
+            self._audio_sub.unregister()
+        except Exception:
+            pass
         if self._wf is not None:
             try:
                 self._wf.close()
@@ -386,11 +382,6 @@ class StampAlignedRecorder(object):
             except Exception:
                 pass
             self._writer = None
-
-        corrected_fps = self._finalize_mp4()
-        final_codec = None
-        if self._frame_count > 0 and os.path.isfile(self._mp4_path):
-            final_codec = self._probe_video_codec()
 
         stamp_span = None
         if self._first_stamp is not None and self._last_stamp is not None:
@@ -410,10 +401,25 @@ class StampAlignedRecorder(object):
             "wav": self._wav_path,
             "mp4": self._mp4_path,
             "video_fourcc_used": self._video_fourcc_used,
-            "video_codec": final_codec,
-            "video_transcoded_h264": final_codec == "h264",
+            "video_transcode_h264": bool(
+                rospy.get_param("~video_transcode_h264", True)
+            ),
+            "video_fix_timeline": bool(rospy.get_param("~video_fix_timeline", True)),
+            "video_finalize_preset": str(
+                rospy.get_param("~video_finalize_preset", "medium")
+            ),
+            "video_finalize_ultrafast_sec": float(
+                rospy.get_param("~video_finalize_ultrafast_sec", 120.0)
+            ),
+            "video_finalize_timeout_sec": int(
+                rospy.get_param("~video_finalize_timeout_sec", 7200)
+            ),
+            "video_ffmpeg_path": str(rospy.get_param("~video_ffmpeg_path", "ffmpeg")),
+            "video_ffprobe_path": str(
+                rospy.get_param("~video_ffprobe_path", "ffprobe")
+            ),
             "video_stamp_span_sec": stamp_span,
-            "video_fps_corrected": corrected_fps,
+            "finalize_status": "pending",
         }
         try:
             with open(self._meta_path, "w") as f:
@@ -421,10 +427,11 @@ class StampAlignedRecorder(object):
         except Exception as e:
             rospy.logwarn("Could not write meta: %s", e)
 
+        self._spawn_finalize_background(meta)
+
         rospy.loginfo(
-            "Stopped. frames=%d meta=%s wav=%s mp4=%s",
+            "Recording stopped. frames=%d wav=%s mp4=%s (finalize in background)",
             self._frame_count,
-            self._meta_path,
             self._wav_path,
             self._mp4_path,
         )

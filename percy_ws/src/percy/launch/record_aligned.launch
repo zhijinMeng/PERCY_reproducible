@@ -19,5 +19,8 @@
     <param name="video_fourcc_preference" value="avc1,H264,mp4v"/>
     <param name="video_transcode_h264" value="true"/>
     <param name="video_fix_timeline" value="true"/>
+    <!-- 录制 &gt;120s 时 finalize 用 ultrafast；15–20min 请在 Ctrl+C 后运行 wait_finalize.sh -->
+    <param name="video_finalize_ultrafast_sec" value="120.0"/>
+    <param name="video_finalize_timeout_sec" value="7200"/>
   </node>
 </launch>
