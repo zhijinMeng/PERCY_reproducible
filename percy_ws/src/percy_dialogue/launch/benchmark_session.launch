@@ -19,7 +19,7 @@
   <arg name="energy_margin_end_db" default="4.0"/>
   <arg name="audio_gain" default="$(eval '2.0' if arg('audio_source') == 'host_usb' else '2.8')"/>
   <arg name="end_silence_sec" default="$(eval '0.65' if arg('audio_source') == 'host_usb' else '1.0')"/>
-  <arg name="max_utterance_sec" default="12.0"/>
+  <arg name="max_utterance_sec" default="25.0"/>
   <arg name="min_speech_sec" default="0.35"/>
   <arg name="min_whisper_sec" default="0.7"/>
   <arg name="enable_noise_reduce" default="$(eval 'false' if arg('audio_source') == 'host_usb' else 'true')"/>

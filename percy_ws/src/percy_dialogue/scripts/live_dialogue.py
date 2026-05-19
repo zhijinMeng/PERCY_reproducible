@@ -65,7 +65,7 @@ class LiveDialogue(object):
         self._end_silence = float(rospy.get_param("~end_silence_sec", 0.8))
         self._min_speech = float(rospy.get_param("~min_speech_sec", 0.35))
         self._min_whisper_sec = float(rospy.get_param("~min_whisper_sec", 0.5))
-        self._max_utterance = float(rospy.get_param("~max_utterance_sec", 12.0))
+        self._max_utterance = float(rospy.get_param("~max_utterance_sec", 25.0))
         self._api_retries = int(rospy.get_param("~openai_retries", 3))
         self._post_tts_mute = float(rospy.get_param("~post_tts_mute_sec", 1.2))
         self._whisper_model = str(rospy.get_param("~whisper_model", "whisper-1"))
@@ -336,7 +336,9 @@ class LiveDialogue(object):
             duration = now_ros - (self._speech_start_ros or now_ros)
             if duration >= self._max_utterance:
                 rospy.loginfo("Max utterance %.1fs — sending to ASR", self._max_utterance)
-                self._submit_utterance(self._last_speech_ros or now_ros)
+                self._submit_utterance(
+                    self._last_speech_ros or now_ros, reason="max_utterance"
+                )
             return
 
         if not self._speech_started:
@@ -346,9 +348,16 @@ class LiveDialogue(object):
         silence = now_ros - (self._last_speech_ros or now_ros)
         duration = now_ros - (self._speech_start_ros or now_ros)
         if silence >= self._end_silence and duration >= self._min_speech:
-            self._submit_utterance(self._last_speech_ros or now_ros)
+            rospy.loginfo(
+                "End silence %.1fs (speech %.1fs) — sending to ASR",
+                silence,
+                duration,
+            )
+            self._submit_utterance(
+                self._last_speech_ros or now_ros, reason="end_silence"
+            )
 
-    def _submit_utterance(self, end_ros):
+    def _submit_utterance(self, end_ros, reason="unknown"):
         with self._lock:
             if not self._speech_started:
                 return
@@ -359,6 +368,11 @@ class LiveDialogue(object):
             self._speech_start_ros = None
             self._last_speech_ros = None
         pcm_dur = self._pcm_duration_sec(pcm, self._sample_rate)
+        self._log_event(
+            "utterance_end",
+            reason=reason,
+            duration_sec=round(pcm_dur, 3),
+        )
         if pcm_dur < self._min_whisper_sec:
             rospy.logwarn("Skip ASR (%.2fs)", pcm_dur)
             return
@@ -376,7 +390,7 @@ class LiveDialogue(object):
         if self._speech_started and self._state_is(State.LISTEN):
             end_ros = self._now_ros()
             self._log_event("end_turn_service")
-            self._submit_utterance(end_ros)
+            self._submit_utterance(end_ros, reason="end_turn_service")
             return TriggerResponse(success=True, message="utterance submitted")
         return TriggerResponse(success=False, message="not listening or no speech")
 

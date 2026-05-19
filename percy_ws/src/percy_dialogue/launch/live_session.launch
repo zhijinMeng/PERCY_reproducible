@@ -9,7 +9,7 @@
   <arg name="end_silence_sec" default="0.8"/>
   <arg name="audio_gain" default="2.0"/>
   <arg name="vad_mode" default="3"/>
-  <arg name="max_utterance_sec" default="12.0"/>
+  <arg name="max_utterance_sec" default="25.0"/>
   <arg name="warmup_seconds" default="1.0"/>
 
   <group if="$(eval arg('audio_source') == 'host_usb')">

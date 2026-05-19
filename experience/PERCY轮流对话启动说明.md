@@ -339,7 +339,7 @@ roslaunch percy_dialogue benchmark_session.launch session_id:=16
 | `percy_ws/src/percy_dialogue/launch/benchmark_session.launch` | 录制 + 对话 |
 | `percy_ws/src/percy/` | stamp 对齐录制 + Whisper 离线 |
 | `.env.local.example` | 环境变量模板 |
-| `run_turn_dialogue.sh` | 宿主机一键 |
+| `record_dialogue_session.sh` | 容器内一键（对话+A/V，推荐） |
 | `docker_ros1_noetic/install_dialogue_deps.sh` | Python 依赖（旧镜像补装） |
 | `docker_ros1_noetic/install_pal_msgs.sh` | 自动 clone + CATKIN_IGNORE（可选） |
 

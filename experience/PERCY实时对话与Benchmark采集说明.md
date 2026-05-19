@@ -91,7 +91,7 @@ bash /workspace/record_dialogue_session.sh 18 \
   end_silence_sec:=1.0 \
   post_tts_mute_sec:=1.5 \
   vad_mode:=3 \
-  max_utterance_sec:=12.0
+  max_utterance_sec:=25.0
 ```
 
 | 参数 | 默认 | 说明 |
@@ -99,7 +99,7 @@ bash /workspace/record_dialogue_session.sh 18 \
 | `vad_mode` | 3 | WebRTC 灵敏度（3 较不敏感，少误触发） |
 | `end_silence_sec` | 0.8 | 静音多久判定一句结束 |
 | `post_tts_mute_sec` | 1.2 | TTS 后冷却，防机器人回声 |
-| `max_utterance_sec` | 12 | 最长一句，超时强制送 ASR |
+| `max_utterance_sec` | 25 | 最长一句，超时强制送 ASR（兜底；正常靠静音截断） |
 
 ---
 

@@ -18,8 +18,7 @@ echo "=== 1. 包与 launch ==="
 rospack find percy >/dev/null || fail "percy"
 rospack find percy_dialogue >/dev/null || fail "percy_dialogue"
 [[ -f "$(rospack find percy)/launch/record_aligned.launch" ]] || fail "percy record_aligned.launch"
-[[ -f "$(rospack find percy_dialogue)/launch/turn_dialogue.launch" ]] || fail "turn_dialogue.launch"
-[[ -f "$(rospack find percy_dialogue)/launch/benchmark_session.launch" ]] || fail "benchmark_session.launch"
+[[ -f "$(rospack find percy_dialogue)/launch/live_session.launch" ]] || fail "live_session.launch"
 ok "rospack + launch 文件"
 
 echo "=== 2. Python 依赖 ==="
@@ -39,7 +38,7 @@ check_rosrun() {
   fail "缺少 devel/lib/${pkg}/${node}"
 }
 check_rosrun percy stamp_aligned_recorder.py
-check_rosrun percy_dialogue turn_dialogue.py
+check_rosrun percy_dialogue live_dialogue.py
 check_rosrun percy_dialogue tts_test.py
 check_rosrun percy_dialogue build_benchmark_manifest.py
 ok "节点已 catkin 安装"
@@ -76,5 +75,5 @@ fi
 echo ""
 echo "完整联调:"
 echo "  rosrun percy_dialogue tts_test.py \"Hello\""
-echo "  roslaunch percy_dialogue turn_dialogue.launch session_id:=test01"
+echo "  bash /workspace/record_dialogue_session.sh test01"
 echo "  /workspace/record_dialogue_session.sh 14"
