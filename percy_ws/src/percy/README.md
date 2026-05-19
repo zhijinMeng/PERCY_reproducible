@@ -1,44 +1,36 @@
-# percy — stamp 对齐音视频录制
+# percy — stamp 对齐 A/V 录制
 
-**对话与时间轴**已抽到独立包 **`percy_dialogue`**，本包只负责录制与离线 ASR。
+头相机 + 外置/机载麦克风，按图像 `header.stamp` 切片写入 `audio.wav` 与 `whole_video.mp4`。
 
-## 依赖
-
-- ROS Noetic，`audio_common_msgs`，`cv_bridge`
-- 可选联合实验：`percy_dialogue` + `OPENAI_API_KEY`
-
-## 编译
-
-```bash
-cd ~/Research/percy_ws && catkin_make && source devel/setup.bash
-```
+主流程（含对话）见 [`~/Research/experience/PERCY实时对话与Benchmark采集说明.md`](../../../experience/PERCY实时对话与Benchmark采集说明.md)。
 
 ## Launch
 
+| Launch | 说明 |
+|--------|------|
+| `record_aligned.launch` | 仅录制 A/V（无对话） |
+| `host_rode_capture.launch` | 仅发布 `/audio/rode`（调试麦） |
+
 ```bash
-roslaunch percy record_aligned.launch session_id:=13
+roslaunch percy record_aligned.launch session_id:=10
+# 默认 audio_source:=host_usb → host_rode_capture + stamp_aligned_recorder
 ```
 
-对话或「录制+对话」见 **`percy_dialogue`**：
+结束录制后：`bash .../scripts/wait_finalize.sh /workspace/percy_data/<id>`
 
-```bash
-roslaunch percy_dialogue benchmark_session.launch session_id:=13
-```
-
-## Session 产出
+## 产出
 
 | 文件 | 说明 |
 |------|------|
-| `audio.wav` / `whole_video.mp4` | 对齐 A/V |
-| `recording_meta.json` | 含 `first_image_stamp`（时间原点） |
-| `audio_whisper_large_v3.json` | 离线 Whisper |
+| `audio.wav` | 16 kHz mono |
+| `whole_video.mp4` | H.264（finalize 后） |
+| `recording_meta.json` | 含 `av_sync_error_sec`、t0 等 |
 
-## 离线
+## 工具
 
 ```bash
-rosrun percy benchmark_asr.sh ~/Research/percy_data/13
+rosrun percy rode_capture_sanity.py --out-dir /tmp/rode_sanity
+rosrun percy benchmark_asr.sh /workspace/percy_data/10
+bash /workspace/record_aligned.sh 10
+bash /workspace/check_percy_av_smoke.sh --record-sec 12
 ```
-
-宿主机一键录制+对话：`~/Research/record_dialogue_session.sh 13`
-
-录制步骤与检查：[`~/Research/experience/录制对齐音视频说明.md`](../../../experience/录制对齐音视频说明.md)

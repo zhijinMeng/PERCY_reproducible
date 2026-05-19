@@ -91,7 +91,7 @@ rostopic info /head_front_camera/color/image_raw   # Publishers 不能是 None
 ### 3.4 轮流对话 Python 依赖（`percy_dialogue`）
 
 **推荐（一次构建，以后每个新容器都有）：** 镜像 `research/ros1-noetic-percy:local` 的 Dockerfile 已内置  
-`openai`、`webrtcvad`、`nltk`/VADER。更新依赖后或首次使用，在**宿主机**重建镜像一次：
+`openai`、`webrtcvad`。更新依赖后或首次使用，在**宿主机**重建镜像一次：
 
 ```bash
 cd ~/Research
@@ -103,7 +103,7 @@ cd ~/Research
 进容器可快速自检：
 
 ```bash
-python3 -c "import webrtcvad, openai; from nltk.sentiment.vader import SentimentIntensityAnalyzer; print('deps OK')"
+python3 -c "import webrtcvad, openai; print('deps OK', openai.__version__)"
 ```
 
 **仅当**仍报 `No module named webrtcvad`（旧镜像未 rebuild）时，在容器内补装：

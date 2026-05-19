@@ -20,9 +20,8 @@
 录制开始 → /percy/session/t0 (latched) → 对话时间轴 t=0
 ```
 
-- **推荐入口**：`record_dialogue_session.sh` → `live_session.launch`
+- **入口**：`record_dialogue_session.sh` → `live_session.launch`
 - **对话节点**：`live_dialogue.py`（WebRTC VAD，问候播完后再收用户语音）
-- **旧节点**（仍可用）：`turn_dialogue.py` + `benchmark_session.launch`
 
 ---
 
@@ -126,31 +125,18 @@ bash /workspace/record_dialogue_session.sh 18 \
 
 ---
 
-## 5. 仅对话 / 仅录制
-
-| 需求 | 命令 |
-|------|------|
-| **仅对话**（无 A/V 文件） | `roslaunch percy_dialogue live_session.launch session_id:=test01` 需自行去掉 launch 里的 recorder，或见 [`PERCY轮流对话启动说明.md`](PERCY轮流对话启动说明.md) 的 `turn_dialogue` |
-| **仅录制** | `roslaunch percy record_aligned.launch session_id:=N` |
-| **旧版一体** | `roslaunch percy_dialogue benchmark_session.launch`（`turn_dialogue`） |
-
-推荐 benchmark：**`record_dialogue_session.sh` + `live_session`**。
-
----
-
-## 6. 整理旧 session 切片
-
-若根目录仍有 `utterance_*.wav`：
+## 5. 仅录制（无对话）
 
 ```bash
-source /workspace/percy_ws/devel/setup.bash
-rosrun percy_dialogue organize_session_utterances.py /workspace/percy_data/17
-rosrun percy_dialogue build_benchmark_manifest.py /workspace/percy_data/17
+roslaunch percy record_aligned.launch session_id:=N
+# 或: bash /workspace/record_aligned.sh N
 ```
+
+对话 + A/V 仍用 **`record_dialogue_session.sh`**。
 
 ---
 
-## 7. 打包发给导师
+## 6. 打包发给导师
 
 ```bash
 cd ~/Research
@@ -164,12 +150,12 @@ tar -czf percy_session_17.tar.gz --exclude="17/finalize.log" 17
 
 ---
 
-## 8. 常见问题
+## 7. 常见问题
 
 | 现象 | 处理 |
 |------|------|
 | 机器人不回应 | 等 `Ready` 再说话；看是否 `You said:`；查 `OPENAI_API_KEY` |
-| 每句都等满 12s | 环境声被 VAD 当人声；换安静环境、对麦说话、`vad_mode:=3` |
+| 每句都顶满 `max_utterance` | 底噪/增益过高，VAD 判不停；降 `audio_gain` / Rode 增益，或 `rosservice call /percy_live/end_turn "{}"` |
 | `Connection error` / DNS | 宿主机 `ping api.openai.com`；节点会自动重试 3 次 |
 | 无 `/audio/rode` | 宿主机重进 `./ros1_ari.sh`（带 USB 麦）；`arecord -l` 见 NTUSB |
 | 视频未 H.264 / 未 finalize | Ctrl+C 后跑 `bash .../wait_finalize.sh /workspace/percy_data/N` |
@@ -178,7 +164,7 @@ tar -czf percy_session_17.tar.gz --exclude="17/finalize.log" 17
 
 ---
 
-## 9. 代码入口速查
+## 8. 代码入口速查
 
 | 路径 | 说明 |
 |------|------|
@@ -187,6 +173,6 @@ tar -czf percy_session_17.tar.gz --exclude="17/finalize.log" 17
 | `percy_ws/.../scripts/live_dialogue.py` | 实时对话 |
 | `percy_ws/.../scripts/stamp_aligned_recorder.py` | A/V 对齐录制 |
 | `percy_ws/.../scripts/host_rode_capture.py` | 外置麦 → `/audio/rode` |
-| `percy_ws/.../scripts/organize_session_utterances.py` | 旧切片归档 |
+| `percy_ws/.../scripts/test_vad_eou.py` | 离线回放 VAD 截断 |
 
 路径根目录：`~/Research`（容器 `/workspace`）。

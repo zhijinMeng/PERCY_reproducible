@@ -17,10 +17,9 @@ catkin_package(
 # session_timeline.py 仅作模块，勿 catkin_install_python（会进 devel/lib 遮蔽 import）
 catkin_install_python(PROGRAMS
   scripts/live_dialogue.py
-  scripts/turn_dialogue.py
   scripts/tts_test.py
   scripts/build_benchmark_manifest.py
-  scripts/organize_session_utterances.py
+  scripts/test_vad_eou.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

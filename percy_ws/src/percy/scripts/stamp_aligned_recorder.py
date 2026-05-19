@@ -347,7 +347,7 @@ class StampAlignedRecorder(object):
             return None
 
     def _write_meta_live(self, finalize_status="recording"):
-        """Write partial meta so turn_dialogue can lock timeline origin early."""
+        """Write partial meta so live_dialogue can lock timeline origin early."""
         meta = {
             "session_id": self._session,
             "camera_topic": self._camera_topic,

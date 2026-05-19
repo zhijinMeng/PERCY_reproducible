@@ -75,7 +75,7 @@ class HostRodeCapture(object):
 
     def _start_ffmpeg(self):
         # Let ffmpeg negotiate HW format; output 16 kHz mono s16le.
-        # 与 record_host_mic_only.sh 相同 ALSA 参数；立体声混为 mono 避免只采到单声道
+        # 立体声混为 mono，避免只采到单声道
         af_parts = ["pan=mono|c0=0.5*c0+0.5*c1"]
         g = min(max(self._gain, 0.0), 8.0)
         if abs(g - 1.0) > 1e-6:

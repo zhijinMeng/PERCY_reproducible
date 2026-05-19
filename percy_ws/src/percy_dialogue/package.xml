@@ -3,8 +3,8 @@
   <name>percy_dialogue</name>
   <version>0.1.0</version>
   <description>
-    PERCY turn-taking dialogue: onboard mic VAD, OpenAI ASR/chat, PAL TTS,
-    session timeline annotations aligned with percy stamp-aligned recording.
+    PERCY live dialogue: WebRTC VAD, OpenAI Whisper/GPT, PAL TTS,
+    session timeline aligned with percy stamp-aligned recording.
   </description>
 
   <maintainer email="zhijinMeng@users.noreply.github.com">zhijinMeng</maintainer>

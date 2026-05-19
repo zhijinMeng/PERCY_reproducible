@@ -12,12 +12,4 @@ RUN apt-get update \
         "openai==1.14.1" \
         "webrtcvad==2.0.10" \
         "httpx<0.28" \
-        "nltk>=3.6" \
-    && python3 - <<'PY'
-import nltk
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-nltk.download("vader_lexicon", quiet=True)
-SentimentIntensityAnalyzer()
-import openai, webrtcvad
-print("image deps ok: openai", openai.__version__)
-PY
+    && python3 -c "import openai, webrtcvad; print('image deps ok: openai', openai.__version__)"
