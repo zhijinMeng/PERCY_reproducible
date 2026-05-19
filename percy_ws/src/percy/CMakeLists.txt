@@ -18,6 +18,11 @@ catkin_install_python(PROGRAMS
   scripts/finalize_recording.py
   scripts/benchmark_whisper_align.py
   scripts/audio_channel_probe.py
+  scripts/extract_noise_profile.py
+  scripts/host_rode_capture.py
+  scripts/host_usb_mic_detect.py
+  scripts/rode_capture_sanity.py
+  scripts/host_mic_wav_recorder.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

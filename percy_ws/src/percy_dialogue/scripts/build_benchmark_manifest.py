@@ -47,6 +47,21 @@ def main():
     elif chat and isinstance(chat, list):
         turns = chat
 
+    utterances_dir_path = os.path.join(session_dir, "utterances")
+    utterance_wavs = []
+    if os.path.isdir(utterances_dir_path):
+        utterance_wavs = sorted(
+            os.path.join(utterances_dir_path, name)
+            for name in os.listdir(utterances_dir_path)
+            if name.endswith(".wav")
+        )
+    else:
+        utterance_wavs = sorted(
+            os.path.join(session_dir, name)
+            for name in os.listdir(session_dir)
+            if name.startswith("utterance_") and name.endswith(".wav")
+        )
+
     manifest = {
         "session_id": meta.get("session_id", session_id),
         "benchmark_version": "1.0",
@@ -61,10 +76,14 @@ def main():
             "recording_meta": os.path.join(session_dir, "recording_meta.json"),
             "dialogue_timeline": os.path.join(session_dir, "dialogue_timeline.json"),
             "chat_history": os.path.join(session_dir, "chat_history.json"),
+            "utterances_dir": utterances_dir_path
+            if os.path.isdir(utterances_dir_path)
+            else None,
             "whisper_asr": os.path.join(session_dir, "audio_whisper_large_v3.json")
             if whisper
             else None,
         },
+        "utterance_wavs": utterance_wavs,
         "recording": meta,
         "dialogue_turns": turns,
         "whisper_segment_count": len(whisper.get("segments", [])) if whisper else 0,

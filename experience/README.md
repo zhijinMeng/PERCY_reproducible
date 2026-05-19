@@ -4,8 +4,9 @@
 
 | 文档 | 内容 |
 |------|------|
+| [**`PERCY实时对话与Benchmark采集说明.md`**](PERCY实时对话与Benchmark采集说明.md) | **推荐**：`live_session` 一键对话+A/V、`utterances/`、打包 |
 | [`DOCKER_ROS1_连机器人说明.md`](DOCKER_ROS1_连机器人说明.md) | 网线、Docker、`env_ari.sh`、话题、故障速查 |
-| [`PERCY轮流对话启动说明.md`](PERCY轮流对话启动说明.md) | `/tts` 轮流对话、音量（`pactl`）、`turn_dialogue` |
+| [`PERCY轮流对话启动说明.md`](PERCY轮流对话启动说明.md) | `/tts` 轮流对话、音量（`pactl`）、仅对话 |
 | [`录制对齐音视频说明.md`](录制对齐音视频说明.md) | `record_aligned`、session 检查、离线 Whisper |
 
 路径：`~/Research/experience/`

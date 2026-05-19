@@ -7,16 +7,22 @@ SMALL=0
 FORCE_PULL=0
 REBUILD=0
 ARI=0
+AUDIO=0
 while [[ "${1:-}" == -* ]]; do
   case "$1" in
     --small) SMALL=1 ;;
     --pull) FORCE_PULL=1 ;;
     --rebuild) REBUILD=1 ;;
     --ari) ARI=1 ;;
+    --audio) AUDIO=1 ;;
+    --no-audio) AUDIO=-1 ;;
     -h|--help)
-      echo "用法: $0 [--ari] [--small] [--pull] [--rebuild]"
+      echo "用法: $0 [--ari] [--audio|--no-audio] [--small] [--pull] [--rebuild]"
       echo "  默认：本地镜像 research/ros1-noetic-percy:local（Dockerfile 含 audio_common_msgs）"
       echo "  --ari     进入容器后自动 source env_ari.sh（连机器人 roscore）"
+      echo "  --audio   挂载宿主机 /dev/snd + Pulse（笔记本 USB 麦）"
+      echo "  --no-audio  不挂载声卡（禁用自动检测 USB 麦）"
+      echo "  未指定时：若宿主机检测到 Rode 等 USB 麦，自动等同 --audio"
       echo "  --small   使用 ros:noetic-ros-base（更小；进容器后需自行 apt 装 ros-noetic-audio-common-msgs）"
       echo "  --pull    仅在使用官方镜像变量时 docker pull"
       echo "  --rebuild 强制重新 docker build 本地镜像"
@@ -77,6 +83,29 @@ if [[ -n "${DISPLAY:-}" ]]; then
   X11_ARGS=( -e "DISPLAY=$DISPLAY" -v /tmp/.X11-unix:/tmp/.X11-unix )
 fi
 
+# 在 docker build 之后再检测 USB 麦（--rebuild 可能要几分钟，期间换插 USB 口仍能被识别）
+_maybe_auto_enable_audio() {
+  if [[ "$AUDIO" -eq -1 ]]; then
+    AUDIO=0
+    return
+  fi
+  if [[ "$AUDIO" -eq 1 ]] || [[ "${ROS1_DOCKER_AUDIO:-}" == "1" ]]; then
+    AUDIO=1
+    return
+  fi
+  if [[ "${ROS1_DOCKER_AUDIO:-}" == "0" ]]; then
+    AUDIO=0
+    return
+  fi
+  # shellcheck source=detect_host_usb_mic.sh
+  source "$SCRIPT_DIR/detect_host_usb_mic.sh"
+  if percy_host_usb_mic_present; then
+    AUDIO=1
+    echo "检测到宿主机 USB 麦，已自动启用 --audio（禁用: $0 --no-audio 或 export ROS1_DOCKER_AUDIO=0）"
+  fi
+}
+_maybe_auto_enable_audio
+
 echo "镜像: $IMAGE"
 echo "挂载: $HOST_WS -> $CONTAINER_WS"
 echo "进入后已 source /opt/ros/noetic/setup.bash。"
@@ -84,6 +113,9 @@ if [[ "$ARI" -eq 1 ]]; then
   echo "已启用 --ari：将自动 source /workspace/docker_ros1_noetic/env_ari.sh（ROS_MASTER_URI / ROS_IP）。"
 else
   echo "连机器人: source /workspace/docker_ros1_noetic/env_ari.sh 或使用: $0 --ari"
+fi
+if [[ "$AUDIO" -eq 1 ]] || [[ "${ROS1_DOCKER_AUDIO:-}" == "1" ]]; then
+  echo "已启用 --audio：容器可使用宿主机 ALSA/Pulse（Rode 等 USB 麦）。"
 fi
 echo "percy_ws: cd /workspace/percy_ws && source devel/setup.bash"
 
@@ -115,9 +147,28 @@ else
   START_CMD='source /opt/ros/noetic/setup.bash && exec bash'
 fi
 
+AUDIO_ARGS=()
+if [[ "$AUDIO" -eq 1 ]] || [[ "${ROS1_DOCKER_AUDIO:-}" == "1" ]]; then
+  _uid="$(id -u)"
+  _pulse="/run/user/${_uid}/pulse"
+  if [[ -d "$_pulse" ]]; then
+    AUDIO_ARGS+=( -v "${_pulse}:${_pulse}" -e "PULSE_SERVER=unix:${_pulse}/native" )
+  else
+    echo "警告: 未找到 ${_pulse}，仅挂载 /dev/snd（无 Pulse 时 arecord 仍可能可用）"
+  fi
+  if [[ -d /dev/snd ]]; then
+    AUDIO_ARGS+=( --device /dev/snd )
+  fi
+  _ag="$(getent group audio 2>/dev/null | cut -d: -f3 || true)"
+  if [[ -n "$_ag" ]]; then
+    AUDIO_ARGS+=( --group-add "$_ag" )
+  fi
+fi
+
 exec docker run -it --rm \
   --net=host \
   "${ADD_HOST_ARGS[@]}" \
+  "${AUDIO_ARGS[@]}" \
   -e PYTHONUNBUFFERED=1 \
   "${ARI_ENV[@]}" \
   "${X11_ARGS[@]}" \

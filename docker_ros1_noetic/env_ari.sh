@@ -50,3 +50,25 @@ fi
 
 echo "ROS_MASTER_URI=$ROS_MASTER_URI"
 echo "ROS_IP=$ROS_IP"
+
+if [[ -d /dev/snd ]] && ! command -v arecord >/dev/null 2>&1; then
+  echo "警告: 已挂载 /dev/snd 但无 arecord → bash /workspace/docker_ros1_noetic/ensure_alsa_utils.sh"
+  echo "      或宿主机 ./ros1_ari.sh --rebuild 重建镜像"
+fi
+if command -v arecord >/dev/null 2>&1 || [[ -f /proc/asound/cards ]]; then
+  _detect_sh="/workspace/docker_ros1_noetic/detect_host_usb_mic.sh"
+  if [[ -f "$_detect_sh" ]]; then
+    # shellcheck source=/dev/null
+    source "$_detect_sh"
+    PERCY_HOST_USB_ALSA="$(percy_host_usb_mic_device || true)"
+    if [[ -n "${PERCY_HOST_USB_ALSA:-}" ]]; then
+      export PERCY_HOST_USB_ALSA
+      echo "PERCY host USB mic (ALSA): $PERCY_HOST_USB_ALSA  →  roslaunch 默认 audio_source:=host_usb"
+    elif [[ -f /.dockerenv ]] && [[ "${ROS1_DOCKER_AUDIO:-}" != "0" ]]; then
+      echo "提示: 容器内未看到 USB 麦（常见原因: 本次进容器未挂 --audio）"
+      echo "      宿主机插好 Rode 后执行: arecord -l  应见 NTUSB"
+      echo "      退出容器再: cd ~/Research && ./ros1_ari.sh  或  ./ros1_ari.sh --audio"
+      echo "      换 USB 口只改 card 号，自动识别；须重新进容器挂载 /dev/snd"
+    fi
+  fi
+fi

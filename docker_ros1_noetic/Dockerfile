@@ -5,6 +5,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ros-noetic-audio-common-msgs \
         ffmpeg \
+        alsa-utils \
         python3-pip \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir \

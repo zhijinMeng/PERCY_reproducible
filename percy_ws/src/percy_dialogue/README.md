@@ -28,10 +28,12 @@ roslaunch percy_dialogue turn_dialogue.launch session_id:=dialogue01
 
 | 现象 | 参数 |
 |------|------|
-| 要大喊才听见 | `vad_mode:=0`（最灵敏）、`audio_gain:=2.5`；仍轻可 `audio_gain:=3.0` |
-| 杂音 `you`、响应慢 | `vad_mode:=2`、`min_whisper_sec:=1.2` |
-| 句内稍停就被截断 | 加大 `end_silence_sec:=1.6` 或 `1.8` |
+| 要大喊 / 小声听不见 | `vad_mode:=0`（更灵敏）、`audio_gain:=2.8`～`3.0` |
+| 延迟高 | `end_silence_sec:=0.9`、`min_whisper_sec:=0.6`、`post_tts_mute_sec:=1.0` |
+| 杂音 `you`、幻听变多 | `vad_mode:=1`、`audio_gain:=2.5` |
+| 句内稍停就被截断 | 加大 `end_silence_sec:=1.3` |
 | 机器人回声被当人声 | `post_tts_mute_sec:=2.0` |
+| 稳态底噪 | `enable_noise_reduce:=true`（默认开）；日志看 `Whisper X.XXs` / `GPT X.XXs` |
 | 关 VADER（仅文本对话） | `enable_vader:=false` |
 | 开视觉+0.6/0.4 融合 | 另启 `emotion_model` + `enable_visual_affect:=true` |
 roslaunch percy_dialogue benchmark_session.launch session_id:=13

@@ -1,0 +1,56 @@
+<launch>
+  <!-- 实时对话 + stamp 对齐 A/V（单文件，不依赖 $(find percy) 的 launch 安装） -->
+  <arg name="session_id" default="0"/>
+  <arg name="camera_topic" default="/head_front_camera/color/image_raw"/>
+  <arg name="audio_source" default="host_usb"/>
+  <arg name="audio_topic" default="$(eval '/audio/rode' if arg('audio_source') == 'host_usb' else '/audio/channel0')"/>
+  <arg name="output_root" default="__auto__"/>
+  <arg name="post_tts_mute_sec" default="1.2"/>
+  <arg name="end_silence_sec" default="0.8"/>
+  <arg name="audio_gain" default="2.0"/>
+  <arg name="vad_mode" default="3"/>
+  <arg name="max_utterance_sec" default="12.0"/>
+  <arg name="warmup_seconds" default="1.0"/>
+
+  <group if="$(eval arg('audio_source') == 'host_usb')">
+    <node pkg="percy" type="host_rode_capture.py" name="host_rode_capture" output="screen"
+          respawn="true" respawn_delay="3">
+      <param name="topic" value="$(arg audio_topic)"/>
+      <param name="alsa_device" value="auto"/>
+      <param name="auto_detect_device" value="true"/>
+      <param name="capture_backend" value="ffmpeg"/>
+      <param name="capture_sample_rate" value="48000"/>
+      <param name="capture_channels" value="2"/>
+      <param name="sample_rate" value="16000"/>
+      <param name="gain" value="2.5"/>
+      <param name="chunk_ms" value="100"/>
+    </node>
+  </group>
+
+  <node pkg="percy" type="stamp_aligned_recorder.py" name="stamp_aligned_recorder" output="screen">
+    <param name="session_id" value="$(arg session_id)"/>
+    <param name="camera_topic" value="$(arg camera_topic)"/>
+    <param name="audio_topic" value="$(arg audio_topic)"/>
+    <param name="output_root" value="$(arg output_root)"/>
+    <param name="use_image_stamp" value="true"/>
+    <param name="warmup_seconds" value="$(arg warmup_seconds)"/>
+    <param name="video_fps_fallback" value="30.0"/>
+    <param name="video_fourcc_preference" value="avc1,H264,mp4v"/>
+    <param name="video_transcode_h264" value="true"/>
+    <param name="video_fix_timeline" value="true"/>
+    <param name="video_finalize_ultrafast_sec" value="120.0"/>
+    <param name="video_finalize_timeout_sec" value="7200"/>
+  </node>
+
+  <node pkg="percy_dialogue" type="live_dialogue.py" name="live_dialogue" output="screen">
+    <param name="session_id" value="$(arg session_id)"/>
+    <param name="audio_topic" value="$(arg audio_topic)"/>
+    <param name="post_tts_mute_sec" value="$(arg post_tts_mute_sec)"/>
+    <param name="end_silence_sec" value="$(arg end_silence_sec)"/>
+    <param name="audio_gain" value="$(arg audio_gain)"/>
+    <param name="vad_mode" value="$(arg vad_mode)"/>
+    <param name="max_utterance_sec" value="$(arg max_utterance_sec)"/>
+    <param name="data_root" value="$(arg output_root)"/>
+    <param name="play_greeting" value="true"/>
+  </node>
+</launch>

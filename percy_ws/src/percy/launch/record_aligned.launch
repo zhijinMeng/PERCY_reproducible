@@ -3,9 +3,14 @@
 
   <arg name="session_id" default="0"/>
   <arg name="camera_topic" default="/head_front_camera/color/image_raw"/>
-  <arg name="audio_topic" default="/audio/channel0"/>
+  <arg name="audio_source" default="host_usb"/>
+  <arg name="audio_topic" default="$(eval '/audio/rode' if arg('audio_source') == 'host_usb' else '/audio/channel0')"/>
+  <group if="$(eval arg('audio_source') == 'host_usb')">
+    <include file="$(find percy)/launch/host_rode_capture.launch"/>
+  </group>
   <!-- __auto__: $PERCY_DATA_DIR or &lt;ws&gt;/src/DATA -->
   <arg name="output_root" default="__auto__"/>
+  <arg name="warmup_seconds" default="1.0"/>
 
   <node pkg="percy" type="stamp_aligned_recorder.py" name="stamp_aligned_recorder" output="screen">
     <param name="session_id" value="$(arg session_id)"/>
@@ -13,7 +18,7 @@
     <param name="audio_topic" value="$(arg audio_topic)"/>
     <param name="output_root" value="$(arg output_root)"/>
     <param name="use_image_stamp" value="true"/>
-    <param name="warmup_seconds" value="0.5"/>
+    <param name="warmup_seconds" value="$(arg warmup_seconds)"/>
     <param name="video_fps_fallback" value="30.0"/>
     <!-- OpenCV 在 Linux 上常只能写出 mp4v；结束后 ffmpeg 转 H.264 便于浏览器播放 -->
     <param name="video_fourcc_preference" value="avc1,H264,mp4v"/>

@@ -31,6 +31,7 @@ import threading
 
 import cv2
 import rospy
+from std_msgs.msg import Float64
 from audio_common_msgs.msg import AudioData
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
@@ -92,8 +93,13 @@ class StampAlignedRecorder(object):
         self._last_img_stamp = None
         self._frame_count = 0
         self._first_stamp = None
+        self._recording_started_wall_ros = None
         self._last_stamp = None
         self._video_fourcc_used = None
+        # 按 stamp 累积应取字节数，避免每帧 round 丢 1 字节；欠载统计
+        self._audio_byte_acc = 0.0
+        self._underrun_frames = 0
+        self._last_pcm_tail = b"\x00\x00"
 
         rospy.loginfo("percy: session=%s out_dir=%s", self._session, self._out_dir)
         rospy.loginfo(
@@ -108,6 +114,9 @@ class StampAlignedRecorder(object):
             self._use_image_stamp,
         )
 
+        self._session_t0_pub = rospy.Publisher(
+            "/percy/session/t0", Float64, queue_size=1, latch=True
+        )
         self._audio_sub = rospy.Subscriber(
             self._audio_topic, AudioData, self._audio_cb, queue_size=200, buff_size=2**24
         )
@@ -140,8 +149,11 @@ class StampAlignedRecorder(object):
     def _clear_audio_buf(self):
         with self._lock:
             self._audio_buf.clear()
+        self._audio_byte_acc = 0.0
 
     def _pop_audio(self, nbytes):
+        if nbytes <= 0:
+            return b""
         out = bytearray()
         with self._lock:
             take = min(len(self._audio_buf), nbytes)
@@ -149,7 +161,18 @@ class StampAlignedRecorder(object):
                 out.extend(self._audio_buf[:take])
                 del self._audio_buf[:take]
         if len(out) < nbytes:
-            out.extend(b"\x00" * (nbytes - len(out)))
+            self._underrun_frames += 1
+            pad = nbytes - len(out)
+            if len(out) >= 2:
+                last = bytes(out[-2:])
+            else:
+                last = self._last_pcm_tail
+            while len(out) < nbytes:
+                out.extend(last)
+        if len(out) > nbytes:
+            out = out[:nbytes]
+        if len(out) >= 2:
+            self._last_pcm_tail = bytes(out[-2:])
         return bytes(out)
 
     def _open_wav(self):
@@ -214,6 +237,20 @@ class StampAlignedRecorder(object):
 
         return dt
 
+    def _nbytes_for_dt(self, dt):
+        """PCM bytes for one video frame interval; must be even (16-bit mono/stereo)."""
+        self._audio_byte_acc += (
+            float(dt)
+            * float(self._sample_rate)
+            * float(self._channels)
+            * float(self._sample_width)
+        )
+        nbytes = int(self._audio_byte_acc)
+        if nbytes & 1:
+            nbytes -= 1
+        self._audio_byte_acc -= nbytes
+        return nbytes
+
     def _image_cb(self, msg):
         if self._shutting_down:
             return
@@ -249,15 +286,7 @@ class StampAlignedRecorder(object):
 
         h, w = bgr.shape[:2]
         dt = self._dt_for_frame(stamp)
-        nbytes = int(
-            round(
-                float(dt)
-                * float(self._sample_rate)
-                * float(self._channels)
-                * float(self._sample_width)
-            )
-        )
-        nbytes = max(nbytes, 1)
+        nbytes = self._nbytes_for_dt(dt)
 
         if not self._recording:
             self._open_wav()
@@ -265,13 +294,21 @@ class StampAlignedRecorder(object):
             self._open_writer((w, h), fps=fps_from_dt)
             self._recording = True
             self._first_stamp = stamp.to_sec()
+            self._recording_started_wall_ros = rospy.Time.now().to_sec()
+            self._session_t0_pub.publish(Float64(self._recording_started_wall_ros))
             self._write_meta_live(finalize_status="recording")
-            rospy.loginfo("Recording -> %s , %s", self._wav_path, self._mp4_path)
+            rospy.loginfo(
+                "Recording -> %s , %s (t0=%.3f)",
+                self._wav_path,
+                self._mp4_path,
+                self._recording_started_wall_ros,
+            )
 
         pcm = self._pop_audio(nbytes)
         if self._wf is None:
             return
-        self._wf.writeframes(pcm)
+        if pcm:
+            self._wf.writeframes(pcm)
 
         if self._frame_size is not None and (w, h) != self._frame_size:
             rospy.logwarn("Frame size changed; re-opening video writer.")
@@ -322,6 +359,7 @@ class StampAlignedRecorder(object):
             "sample_width": self._sample_width,
             "first_image_stamp": self._first_stamp,
             "last_image_stamp": self._last_stamp,
+            "recording_started_wall_ros": self._recording_started_wall_ros,
             "wav": self._wav_path,
             "mp4": self._mp4_path,
             "finalize_status": finalize_status,
@@ -422,6 +460,7 @@ class StampAlignedRecorder(object):
             "sample_width": self._sample_width,
             "first_image_stamp": self._first_stamp,
             "last_image_stamp": self._last_stamp,
+            "recording_started_wall_ros": self._recording_started_wall_ros,
             "wav": self._wav_path,
             "mp4": self._mp4_path,
             "video_fourcc_used": self._video_fourcc_used,
@@ -453,6 +492,13 @@ class StampAlignedRecorder(object):
 
         self._spawn_finalize_background(meta)
 
+        if self._underrun_frames > 0:
+            rospy.logwarn(
+                "Audio buffer underrun on %d/%d frames (patched with sample-hold; "
+                "try longer warmup_seconds or check /audio topic rate)",
+                self._underrun_frames,
+                self._frame_count,
+            )
         rospy.loginfo(
             "Recording stopped. frames=%d wav=%s mp4=%s (finalize in background)",
             self._frame_count,

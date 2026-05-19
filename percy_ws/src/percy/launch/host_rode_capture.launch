@@ -1,0 +1,26 @@
+<launch>
+  <!-- Laptop USB mic to /audio/rode; needs Docker audio mount and arecord -->
+  <arg name="topic" default="/audio/rode"/>
+  <arg name="alsa_device" default="auto"/>
+  <!-- ffmpeg 协商 ALSA 格式；arecord 仅作后备 -->
+  <arg name="capture_backend" default="ffmpeg"/>
+  <arg name="capture_sample_rate" default="48000"/>
+  <arg name="capture_channels" default="2"/>
+  <arg name="sample_rate" default="16000"/>
+  <!-- 直录 mic_test01 约 -26 dBFS；ROS 管道默认 3.0 与之接近，可再调 -->
+  <arg name="gain" default="3.0"/>
+  <arg name="chunk_ms" default="100"/>
+
+  <node pkg="percy" type="host_rode_capture.py" name="host_rode_capture" output="screen"
+        respawn="true" respawn_delay="3">
+    <param name="topic" value="$(arg topic)"/>
+    <param name="alsa_device" value="$(arg alsa_device)"/>
+    <param name="auto_detect_device" value="true"/>
+    <param name="capture_backend" value="$(arg capture_backend)"/>
+    <param name="capture_sample_rate" value="$(arg capture_sample_rate)"/>
+    <param name="capture_channels" value="$(arg capture_channels)"/>
+    <param name="sample_rate" value="$(arg sample_rate)"/>
+    <param name="gain" value="$(arg gain)"/>
+    <param name="chunk_ms" value="$(arg chunk_ms)"/>
+  </node>
+</launch>

@@ -1,16 +1,35 @@
 <launch>
   <arg name="session_id" default="0"/>
-  <arg name="audio_topic" default="/audio/channel0"/>
+  <!-- host_usb: 自动 roslaunch host_rode_capture + /audio/rode；onboard: 机载 /audio/channel0 -->
+  <arg name="audio_source" default="host_usb"/>
+  <arg name="audio_topic" default="$(eval '/audio/rode' if arg('audio_source') == 'host_usb' else '/audio/channel0')"/>
+  <group if="$(eval arg('audio_source') == 'host_usb')">
+    <include file="$(find percy)/launch/host_rode_capture.launch"/>
+  </group>
   <!-- __auto__ → $PERCY_DATA_DIR 或 /tmp/percy_data -->
   <arg name="output_root" default="__auto__"/>
   <arg name="timeline_origin_timeout_sec" default="15.0"/>
-  <arg name="post_tts_mute_sec" default="1.5"/>
-  <arg name="vad_mode" default="1"/>
-  <arg name="audio_gain" default="2.0"/>
-  <arg name="end_silence_sec" default="1.4"/>
-  <arg name="min_speech_sec" default="0.5"/>
-  <arg name="min_whisper_sec" default="1.0"/>
-  <arg name="min_transcript_words" default="2"/>
+  <!-- post_tts_mute：TTS 后冷却，过小易把机器人回声当人声 -->
+  <arg name="post_tts_mute_sec" default="1.2"/>
+  <!-- host_usb 默认 window：问候后固定录 N 秒再送 Whisper，无 VAD -->
+  <arg name="vad_backend" default="$(eval 'window' if arg('audio_source') == 'host_usb' else 'webrtc')"/>
+  <arg name="utterance_window_sec" default="6.0"/>
+  <arg name="vad_mode" default="2"/>
+  <arg name="energy_adaptive" default="true"/>
+  <arg name="energy_start_dbfs" default="-24.0"/>
+  <arg name="energy_end_dbfs" default="-40.0"/>
+  <arg name="energy_margin_start_db" default="8.0"/>
+  <arg name="energy_margin_end_db" default="4.0"/>
+  <arg name="audio_gain" default="$(eval '2.0' if arg('audio_source') == 'host_usb' else '2.8')"/>
+  <arg name="end_silence_sec" default="$(eval '0.65' if arg('audio_source') == 'host_usb' else '1.0')"/>
+  <arg name="max_utterance_sec" default="12.0"/>
+  <arg name="min_speech_sec" default="0.35"/>
+  <arg name="min_whisper_sec" default="0.7"/>
+  <arg name="min_transcript_words" default="1"/>
+  <!-- 稳态底噪：冷却/静音期学噪声谱，送 ASR 前谱减 -->
+  <arg name="enable_noise_reduce" default="$(eval 'false' if arg('audio_source') == 'host_usb' else 'true')"/>
+  <arg name="highpass_hz" default="80.0"/>
+  <arg name="noise_prop_decrease" default="0.85"/>
   <arg name="enable_vader" default="true"/>
   <arg name="enable_visual_affect" default="false"/>
   <arg name="fusion_w_visual" default="0.6"/>
@@ -20,12 +39,23 @@
     <param name="session_id" value="$(arg session_id)"/>
     <param name="audio_topic" value="$(arg audio_topic)"/>
     <param name="post_tts_mute_sec" value="$(arg post_tts_mute_sec)"/>
+    <param name="vad_backend" value="$(arg vad_backend)"/>
+    <param name="utterance_window_sec" value="$(arg utterance_window_sec)"/>
     <param name="vad_mode" value="$(arg vad_mode)"/>
+    <param name="energy_adaptive" value="$(arg energy_adaptive)"/>
+    <param name="energy_start_dbfs" value="$(arg energy_start_dbfs)"/>
+    <param name="energy_end_dbfs" value="$(arg energy_end_dbfs)"/>
+    <param name="energy_margin_start_db" value="$(arg energy_margin_start_db)"/>
+    <param name="energy_margin_end_db" value="$(arg energy_margin_end_db)"/>
     <param name="audio_gain" value="$(arg audio_gain)"/>
     <param name="end_silence_sec" value="$(arg end_silence_sec)"/>
+    <param name="max_utterance_sec" value="$(arg max_utterance_sec)"/>
     <param name="min_speech_sec" value="$(arg min_speech_sec)"/>
     <param name="min_whisper_sec" value="$(arg min_whisper_sec)"/>
     <param name="min_transcript_words" value="$(arg min_transcript_words)"/>
+    <param name="enable_noise_reduce" value="$(arg enable_noise_reduce)"/>
+    <param name="highpass_hz" value="$(arg highpass_hz)"/>
+    <param name="noise_prop_decrease" value="$(arg noise_prop_decrease)"/>
     <param name="reject_spurious_transcripts" value="true"/>
     <param name="data_root" value="$(arg output_root)"/>
     <param name="timeline_origin_timeout_sec" value="$(arg timeline_origin_timeout_sec)"/>

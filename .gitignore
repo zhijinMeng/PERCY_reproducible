@@ -4,6 +4,8 @@ __pycache__/
 .venv-whisper/
 percy_data/
 whole_video_h264.mp4
+percy_session_*.zip
+percy_session_*.tar.gz
 
 # 旧工作区（各自独立 git，不纳入本仓库）
 PERCY/

@@ -1,0 +1,22 @@
+<launch>
+  <!-- 仅麦克风：ffmpeg 采集 + 写 audio.wav（不测相机） -->
+  <arg name="session_id" default="mic_test"/>
+  <arg name="audio_topic" default="/audio/rode"/>
+  <arg name="output_root" default="__auto__"/>
+  <arg name="alsa_device" default="auto"/>
+  <arg name="capture_backend" default="ffmpeg"/>
+  <arg name="gain" default="3.0"/>
+
+  <include file="$(find percy)/launch/host_rode_capture.launch">
+    <arg name="topic" value="$(arg audio_topic)"/>
+    <arg name="alsa_device" value="$(arg alsa_device)"/>
+    <arg name="capture_backend" value="$(arg capture_backend)"/>
+    <arg name="gain" value="$(arg gain)"/>
+  </include>
+
+  <node pkg="percy" type="host_mic_wav_recorder.py" name="host_mic_wav_recorder" output="screen">
+    <param name="session_id" value="$(arg session_id)"/>
+    <param name="audio_topic" value="$(arg audio_topic)"/>
+    <param name="output_root" value="$(arg output_root)"/>
+  </node>
+</launch>
