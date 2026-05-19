@@ -1,0 +1,18 @@
+.env.local
+__pycache__/
+*.pyc
+.venv-whisper/
+percy_data/
+whole_video_h264.mp4
+
+# 旧工作区（各自独立 git，不纳入本仓库）
+PERCY/
+PERCY_reproducible/
+
+# catkin / 本地录制
+percy_ws/build/
+percy_ws/devel/
+percy_ws/src/DATA/
+
+# 嵌套 clone 的 .git（保留源码）
+percy_ws/src/pal_msgs/.git/

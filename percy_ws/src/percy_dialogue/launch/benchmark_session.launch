@@ -1,0 +1,37 @@
+<launch>
+  <!-- Stamp-aligned A/V (percy) + turn dialogue with timeline (percy_dialogue) -->
+  <arg name="session_id" default="0"/>
+  <arg name="camera_topic" default="/head_front_camera/color/image_raw"/>
+  <arg name="audio_topic" default="/audio/channel0"/>
+  <arg name="output_root" default="__auto__"/>
+  <arg name="post_tts_mute_sec" default="1.5"/>
+  <arg name="record_warmup_sec" default="2.0"/>
+  <arg name="vad_mode" default="1"/>
+  <arg name="audio_gain" default="2.0"/>
+  <arg name="end_silence_sec" default="1.4"/>
+  <arg name="min_speech_sec" default="0.5"/>
+  <arg name="min_whisper_sec" default="1.0"/>
+
+  <include file="$(find percy)/launch/record_aligned.launch">
+    <arg name="session_id" value="$(arg session_id)"/>
+    <arg name="camera_topic" value="$(arg camera_topic)"/>
+    <arg name="audio_topic" value="$(arg audio_topic)"/>
+    <arg name="output_root" value="$(arg output_root)"/>
+  </include>
+
+  <node pkg="percy_dialogue" type="turn_dialogue.py" name="turn_dialogue" output="screen"
+        launch-prefix="bash -c 'sleep $(arg record_warmup_sec); $0 $@' --">
+    <param name="session_id" value="$(arg session_id)"/>
+    <param name="audio_topic" value="$(arg audio_topic)"/>
+    <param name="post_tts_mute_sec" value="$(arg post_tts_mute_sec)"/>
+    <param name="vad_mode" value="$(arg vad_mode)"/>
+    <param name="audio_gain" value="$(arg audio_gain)"/>
+    <param name="end_silence_sec" value="$(arg end_silence_sec)"/>
+    <param name="min_speech_sec" value="$(arg min_speech_sec)"/>
+    <param name="min_whisper_sec" value="$(arg min_whisper_sec)"/>
+    <param name="reject_spurious_transcripts" value="true"/>
+    <param name="data_root" value="$(arg output_root)"/>
+    <param name="timeline_origin_timeout_sec" value="60.0"/>
+    <param name="play_greeting" value="true"/>
+  </node>
+</launch>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>percy_dialogue</name>
+  <version>0.1.0</version>
+  <description>
+    PERCY turn-taking dialogue: onboard mic VAD, OpenAI ASR/chat, PAL TTS,
+    session timeline annotations aligned with percy stamp-aligned recording.
+  </description>
+
+  <maintainer email="zhijinMeng@users.noreply.github.com">zhijinMeng</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>audio_common_msgs</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>pal_interaction_msgs</build_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>audio_common_msgs</exec_depend>
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>pal_interaction_msgs</exec_depend>
+  <exec_depend>percy</exec_depend>
+</package>
