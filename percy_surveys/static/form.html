@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PERCY Survey</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; color: #1a1a1a; background: #f6f7f9; }
+    body { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .intro, .note { color: #444; line-height: 1.5; }
+    .session { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+    section { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    section h2 { margin: 0 0 12px; font-size: 1.05rem; }
+    label.q { display: block; margin: 14px 0 6px; font-weight: 600; }
+    input[type=text], textarea, select { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+    textarea { min-height: 80px; }
+    .choices label { display: block; font-weight: normal; margin: 4px 0; }
+    .likert { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .likert label { font-weight: normal; }
+    .hidden { display: none; }
+    button { background: #1f6feb; color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; font-size: 1rem; cursor: pointer; margin-top: 8px; }
+    button:disabled { opacity: 0.6; cursor: wait; }
+    .status { margin-top: 12px; padding: 10px; border-radius: 6px; display: none; }
+    .status.ok { display: block; background: #dafbe1; color: #116329; }
+    .status.err { display: block; background: #ffebe9; color: #82071e; }
+    .req { color: #cf222e; }
+  </style>
+</head>
+<body>
+  <h1 id="title">Loading…</h1>
+  <p class="intro" id="intro"></p>
+  <p class="note" id="note"></p>
+  <div class="session">Session ID: <strong id="sessionLabel"></strong></div>
+  <form id="surveyForm"></form>
+  <button type="submit" form="surveyForm" id="submitBtn">Submit</button>
+  <div class="status" id="status"></div>
+
+  <script>
+    const SURVEY_ID = "{{SURVEY_ID}}";
+    const SESSION_ID = "{{SESSION_ID}}";
+    const schemaPath = SURVEY_ID === "pre_session" ? "/api/schema/pre" : "/api/schema/post";
+    const submitPath = SURVEY_ID === "pre_session" ? "/api/submit/pre" : "/api/submit/post";
+
+    document.getElementById("sessionLabel").textContent = SESSION_ID || "(missing)";
+
+    function fieldName(id) { return "q_" + id; }
+
+    function collectValues(form) {
+      const answers = {};
+      form.querySelectorAll("[data-qid]").forEach(el => {
+        const qid = el.dataset.qid;
+        const type = el.dataset.qtype;
+        if (type === "checkbox") {
+          answers[qid] = el.checked;
+        } else if (type === "multiselect") {
+          if (!answers[qid]) answers[qid] = [];
+          if (el.checked) answers[qid].push(el.value);
+        } else if (type === "likert") {
+          if (el.checked) answers[qid] = Number(el.value);
+        } else if (el.type === "radio") {
+          if (el.checked) answers[qid] = el.value;
+        } else {
+          answers[qid] = el.value;
+        }
+      });
+      return answers;
+    }
+
+    function shouldShow(q, answers) {
+      const cond = q.show_if;
+      if (!cond) return true;
+      const val = answers[cond.field];
+      if (cond.equals !== undefined) return val === cond.equals;
+      if (cond.not_equals !== undefined) return val !== cond.not_equals;
+      if (cond.includes !== undefined) {
+        return Array.isArray(val) && val.includes(cond.includes);
+      }
+      return true;
+    }
+
+    function renderQuestion(q, answers) {
+      const wrap = document.createElement("div");
+      wrap.className = "question";
+      wrap.dataset.qwrap = q.id;
+      if (!shouldShow(q, answers)) {
+        wrap.classList.add("hidden");
+      }
+
+      const label = document.createElement("label");
+      label.className = "q";
+      label.textContent = q.label;
+      if (q.required) {
+        const star = document.createElement("span");
+        star.className = "req";
+        star.textContent = " *";
+        label.appendChild(star);
+      }
+      wrap.appendChild(label);
+
+      const type = q.type;
+      if (type === "checkbox") {
+        const inp = document.createElement("input");
+        inp.type = "checkbox";
+        inp.dataset.qid = q.id;
+        inp.dataset.qtype = "checkbox";
+        if (answers[q.id]) inp.checked = true;
+        wrap.appendChild(inp);
+      } else if (type === "text" || type === "textarea") {
+        const inp = type === "textarea" ? document.createElement("textarea") : document.createElement("input");
+        inp.type = "text";
+        inp.dataset.qid = q.id;
+        inp.dataset.qtype = type;
+        if (answers[q.id]) inp.value = answers[q.id];
+        wrap.appendChild(inp);
+      } else if (type === "select") {
+        const sel = document.createElement("select");
+        sel.dataset.qid = q.id;
+        sel.dataset.qtype = "select";
+        const blank = document.createElement("option");
+        blank.value = "";
+        blank.textContent = "— select —";
+        sel.appendChild(blank);
+        (q.options || []).forEach(opt => {
+          const o = document.createElement("option");
+          o.value = opt;
+          o.textContent = opt;
+          if (answers[q.id] === opt) o.selected = true;
+          sel.appendChild(o);
+        });
+        wrap.appendChild(sel);
+      } else if (type === "multiselect") {
+        const box = document.createElement("div");
+        box.className = "choices";
+        (q.options || []).forEach(opt => {
+          const id = fieldName(q.id + "_" + opt);
+          const row = document.createElement("label");
+          const inp = document.createElement("input");
+          inp.type = "checkbox";
+          inp.value = opt;
+          inp.id = id;
+          inp.dataset.qid = q.id;
+          inp.dataset.qtype = "multiselect";
+          if ((answers[q.id] || []).includes(opt)) inp.checked = true;
+          row.appendChild(inp);
+          row.appendChild(document.createTextNode(" " + opt));
+          box.appendChild(row);
+        });
+        wrap.appendChild(box);
+      } else if (type === "likert") {
+        const box = document.createElement("div");
+        box.className = "likert";
+        const min = q.scale_min || 1;
+        const max = q.scale_max || 7;
+        if (q.scale_min_label) {
+          const span = document.createElement("span");
+          span.textContent = q.scale_min_label;
+          box.appendChild(span);
+        }
+        for (let i = min; i <= max; i++) {
+          const id = fieldName(q.id + "_" + i);
+          const row = document.createElement("label");
+          const inp = document.createElement("input");
+          inp.type = "radio";
+          inp.name = fieldName(q.id);
+          inp.value = String(i);
+          inp.id = id;
+          inp.dataset.qid = q.id;
+          inp.dataset.qtype = "likert";
+          if (Number(answers[q.id]) === i) inp.checked = true;
+          row.appendChild(inp);
+          row.appendChild(document.createTextNode(" " + i));
+          box.appendChild(row);
+        }
+        if (q.scale_max_label) {
+          const span = document.createElement("span");
+          span.textContent = q.scale_max_label;
+          box.appendChild(span);
+        }
+        wrap.appendChild(box);
+      }
+      return wrap;
+    }
+
+    function refreshVisibility(form, schema, answers) {
+      const allQuestions = [];
+      schema.sections.forEach(sec => sec.questions.forEach(q => allQuestions.push(q)));
+      allQuestions.forEach(q => {
+        const wrap = form.querySelector('[data-qwrap="' + q.id + '"]');
+        if (!wrap) return;
+        if (shouldShow(q, answers)) wrap.classList.remove("hidden");
+        else wrap.classList.add("hidden");
+      });
+    }
+
+    async function loadSchema() {
+      const res = await fetch(schemaPath);
+      const schema = await res.json();
+      document.getElementById("title").textContent = schema.title || "Survey";
+      document.getElementById("intro").textContent = schema.intro || "";
+      document.getElementById("note").textContent = schema.note || "";
+      const form = document.getElementById("surveyForm");
+      const answers = {};
+
+      schema.sections.forEach(sec => {
+        const section = document.createElement("section");
+        const h2 = document.createElement("h2");
+        h2.textContent = sec.title || sec.id;
+        section.appendChild(h2);
+        sec.questions.forEach(q => section.appendChild(renderQuestion(q, answers)));
+        form.appendChild(section);
+      });
+
+      form.addEventListener("change", () => {
+        const current = collectValues(form);
+        refreshVisibility(form, schema, current);
+      });
+
+      form.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const status = document.getElementById("status");
+        const btn = document.getElementById("submitBtn");
+        status.className = "status";
+        status.textContent = "";
+
+        if (!SESSION_ID) {
+          status.className = "status err";
+          status.textContent = "Missing session id in URL (?session=ID).";
+          return;
+        }
+
+        const payload = { session_id: SESSION_ID, answers: collectValues(form) };
+        btn.disabled = true;
+        try {
+          const res = await fetch(submitPath, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || res.statusText);
+          status.className = "status ok";
+          if (SURVEY_ID === "pre_session") {
+            status.textContent = "Saved pre_survey.json and profile.json (" + data.profile_topics + " topics). You can start the dialogue session now.";
+          } else {
+            status.textContent = "Saved post_survey.json. Thank you!";
+          }
+        } catch (err) {
+          status.className = "status err";
+          status.textContent = "Submit failed: " + err.message;
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+
+    loadSchema().catch(err => {
+      document.getElementById("status").className = "status err";
+      document.getElementById("status").textContent = "Load failed: " + err.message;
+    });
+  </script>
+</body>
+</html>

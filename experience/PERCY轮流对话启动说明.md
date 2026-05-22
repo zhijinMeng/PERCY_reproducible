@@ -17,7 +17,7 @@
 | 本机 IP | `ip -4 addr show enp3s0`（例 **10.68.0.130**） |
 | 音频 | `bash /workspace/check_percy_av_smoke.sh` 或 `rostopic hz /audio/rode -w 5` |
 | 头相机（可选） | `rostopic hz /head_front_camera/color/image_raw -w 5` ~25–30 |
-| **喇叭音量** | SSH 机器人：§5 一键脚本（默认 **30%**，含 `output0`） |
+| **喇叭音量** | 宿主机 `./set_robot_volume.sh` 或 §5（默认 **60%**，含 `output0`） |
 
 ---
 
@@ -172,22 +172,30 @@ rosparam set /pal/ttsVolume 1.0
 
 SSH 机器人（**在 `pal@ari-27c` 里执行**，不要在本机）。
 
-**每次实验前推荐（约 30% 音量，现场可听、不刺耳）：**
+**每次实验前推荐（默认 **60%**）：**
+
+```bash
+# 宿主机（推荐）
+cd ~/Research && ./set_robot_volume.sh
+# 或指定: ./set_robot_volume.sh 45
+```
+
+SSH 进机器人手动执行：
 
 ```bash
 ssh pal@10.68.0.1
 
 pactl set-default-sink output0
 pactl set-sink-mute output0 0
-pactl set-sink-volume output0 30%
+pactl set-sink-volume output0 60%
 pactl set-sink-mute pal-default-sink 0
-pactl set-sink-volume pal-default-sink 30%
+pactl set-sink-volume pal-default-sink 60%
 ```
 
 宿主机一行：
 
 ```bash
-ssh pal@10.68.0.1 "pactl set-default-sink output0; pactl set-sink-mute output0 0; pactl set-sink-volume output0 30%; pactl set-sink-mute pal-default-sink 0; pactl set-sink-volume pal-default-sink 30%"
+ssh pal@10.68.0.1 "pactl set-default-sink output0; pactl set-sink-mute output0 0; pactl set-sink-volume output0 60%; pactl set-sink-mute pal-default-sink 0; pactl set-sink-volume pal-default-sink 60%"
 ```
 
 自检（应能从机器人胸前喇叭听到左右测试音）：
@@ -203,7 +211,7 @@ pactl list sinks short
 pactl list sinks | grep -A10 "Name: pal-default-sink"
 ```
 
-若 **`pal-default-sink` 只有 ~1%** 或默认 sink 不是 `output0`，TTS 会几乎听不到；务必同时设 **`output0`** 与 **`pal-default-sink`**。太响可改为 `20%`，太轻可 `45%`。
+若 **`pal-default-sink` 只有 ~1%** 或默认 sink 不是 `output0`，TTS 会几乎听不到；务必同时设 **`output0`** 与 **`pal-default-sink`**。太响：`./set_robot_volume.sh 45`；太轻：`./set_robot_volume.sh 70`。
 
 说明：
 
@@ -228,7 +236,7 @@ pactl list sinks | grep -A10 "Name: pal-default-sink"
 | 机器人回声当人声 | `post_tts_mute_sec:=1.5`～`2.0` |
 | 环境声误触发 | `vad_mode:=3`（更不敏感） |
 
-**默认：** `vad_mode=3`、`audio_gain=2.0`、`end_silence_sec=0.8`、`max_utterance_sec=25`、`post_tts_mute_sec=1.2`。
+**默认：** `vad_backend=silero`、`audio_gain=2.0`、`end_silence_sec=0.8`、`max_utterance_sec=25`、`post_tts_mute_sec=1.0`。
 
 ### 6.1 对话 + stamp 对齐 A/V（推荐）
 
@@ -274,7 +282,7 @@ roslaunch percy record_aligned.launch session_id:=10
 | `No module named pal_interaction_msgs` | §3.1 clone + `CATKIN_IGNORE` + `catkin_make` |
 | `No module named webrtcvad` / `openai` | 宿主机 `./ros1_ari.sh --rebuild` 或 `install_dialogue_deps.sh` |
 | `live_session.launch` 找不到 | `cd /workspace/percy_ws && catkin_make && source devel/setup.bash` |
-| TTS 成功但无声 | §5：`set-default-sink output0` + `output0` / `pal-default-sink` 调到 30%（勿只调一个） |
+| TTS 成功但无声 | `./set_robot_volume.sh` 或 §5（`output0` + `pal-default-sink` 都调到 60%，勿只调一个） |
 | `You said:` 是 YouTube/机器人自己的话 | 加大 `post_tts_mute_sec:=2.0`，等 Ready 再讲 |
 | `rosparam` 在容器无效 | 命令要在 **Docker 内** 跑，不要在宿主机跑 `/workspace/...` |
 | 容器里 `docker: command not found` | 已在容器内，不要嵌套 `docker run` |
@@ -304,7 +312,7 @@ roslaunch percy record_aligned.launch session_id:=10
 ping -c 1 10.68.0.1
 # 确保 ~/Research/.env.local 已配置 OPENAI_API_KEY
 
-ssh pal@10.68.0.1 "pactl set-default-sink output0; pactl set-sink-mute output0 0; pactl set-sink-volume output0 30%; pactl set-sink-mute pal-default-sink 0; pactl set-sink-volume pal-default-sink 30%"
+./set_robot_volume.sh
 
 cd ~/Research && ./ros1_ari.sh
 ```

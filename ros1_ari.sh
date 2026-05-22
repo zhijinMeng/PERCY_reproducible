@@ -2,6 +2,7 @@
 # 一键：进入 ROS1 Docker 并自动连 ARI（source env_ari.sh）。
 # 在仓库根执行: ./ros1_ari.sh
 # 笔记本 USB 麦: 插上 Rode 后 ./ros1_ari.sh 会自动 --audio；强制关闭: ./ros1_ari.sh --no-audio
+# NVIDIA GPU: 默认检测到 nvidia-smi 会 --gpu（可选）；关闭: ./ros1_ari.sh --no-gpu
 # 可选参数与 docker_ros1_noetic/run_ros1_noetic.sh 相同，例如: ./ros1_ari.sh --rebuild
 # 临时改机器人/本机 IP（宿主机执行）:
 #   export ARI_ROS_MASTER_URI=http://10.68.0.1:11311

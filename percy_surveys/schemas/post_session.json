@@ -1,0 +1,162 @@
+{
+  "id": "post_session",
+  "title": "PERCY Post-Session Feedback",
+  "qualtrics_ref": "SV_b8cici0YuPnFLuu",
+  "intro": "Thank you for participating. Your feedback helps us improve the robot interview process and develop more engaging human-machine interactions. Approx. 5 minutes.",
+  "note": "Template aligned with MERCI evaluation dimensions. Edit this file if your Qualtrics post survey differs.",
+  "sections": [
+    {
+      "id": "overall",
+      "title": "Overall Experience",
+      "questions": [
+        {
+          "id": "overall_satisfaction",
+          "type": "likert",
+          "label": "Overall, how satisfied were you with the conversation with PERCY?",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Very dissatisfied",
+          "scale_max_label": "Very satisfied"
+        },
+        {
+          "id": "would_talk_again",
+          "type": "select",
+          "label": "Would you like to talk with PERCY again?",
+          "required": true,
+          "options": ["Yes", "Maybe", "No"]
+        }
+      ]
+    },
+    {
+      "id": "dimensions",
+      "title": "Conversation Quality",
+      "questions": [
+        {
+          "id": "naturalness",
+          "type": "likert",
+          "label": "The conversation felt natural and human-like.",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        },
+        {
+          "id": "empathy",
+          "type": "likert",
+          "label": "PERCY showed empathy and understood my feelings.",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        },
+        {
+          "id": "engagement",
+          "type": "likert",
+          "label": "The conversation was engaging and kept my interest.",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        },
+        {
+          "id": "fluency",
+          "type": "likert",
+          "label": "PERCY's responses were easy to understand and fluent.",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        },
+        {
+          "id": "consistency",
+          "type": "likert",
+          "label": "PERCY's responses were consistent with my profile information.",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        },
+        {
+          "id": "relevance",
+          "type": "likert",
+          "label": "Questions and follow-ups were relevant to what I said.",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        }
+      ]
+    },
+    {
+      "id": "robot_interview",
+      "title": "Robot Interview Process",
+      "questions": [
+        {
+          "id": "speech_recognition",
+          "type": "likert",
+          "label": "The robot understood what I said (speech recognition).",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        },
+        {
+          "id": "turn_taking",
+          "type": "likert",
+          "label": "Turn-taking (when to speak / when the robot speaks) felt comfortable.",
+          "required": true,
+          "scale_min": 1,
+          "scale_max": 7,
+          "scale_min_label": "Strongly disagree",
+          "scale_max_label": "Strongly agree"
+        },
+        {
+          "id": "technical_issues",
+          "type": "select",
+          "label": "Did you experience technical issues during the session?",
+          "required": true,
+          "options": ["No issues", "Minor issues", "Major issues"]
+        },
+        {
+          "id": "technical_issues_detail",
+          "type": "textarea",
+          "label": "If yes, please describe the technical issues.",
+          "required": false,
+          "show_if": {"field": "technical_issues", "not_equals": "No issues"}
+        }
+      ]
+    },
+    {
+      "id": "open",
+      "title": "Open Feedback",
+      "questions": [
+        {
+          "id": "best_moment",
+          "type": "textarea",
+          "label": "What was the best moment or most enjoyable part of the conversation?",
+          "required": false
+        },
+        {
+          "id": "improvement",
+          "type": "textarea",
+          "label": "What could be improved about the robot interview?",
+          "required": false
+        },
+        {
+          "id": "additional_comments",
+          "type": "textarea",
+          "label": "Any additional comments?",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

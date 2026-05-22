@@ -1,0 +1,378 @@
+{
+  "id": "pre_session",
+  "title": "PERCY Pre-Session Profile Questionnaire",
+  "qualtrics_ref": "SV_9WDNkmzmKyAs1My",
+  "intro": "This questionnaire collects non-sensitive personal information (age, hobbies, preferences) used to personalize the robot conversation. Responses are kept confidential. Approx. 10 minutes.",
+  "sections": [
+    {
+      "id": "consent",
+      "title": "Consent",
+      "questions": [
+        {
+          "id": "consent",
+          "type": "checkbox",
+          "label": "I consent to participate in this research and allow use of the collected information for research purposes. My identity will remain anonymous.",
+          "required": true
+        },
+        {
+          "id": "email",
+          "type": "text",
+          "label": "Email (optional, for scheduling follow-up)",
+          "required": false,
+          "meta": true
+        }
+      ]
+    },
+    {
+      "id": "demographics",
+      "title": "Background",
+      "questions": [
+        {
+          "id": "gender",
+          "type": "select",
+          "label": "What is your gender identity?",
+          "required": true,
+          "meta": true,
+          "options": ["Male", "Female", "Non-binary/Third gender", "Prefer not to say", "Other"],
+          "other_id": "gender_other"
+        },
+        {
+          "id": "gender_other",
+          "type": "text",
+          "label": "Gender — other (please specify)",
+          "required": false,
+          "meta": true,
+          "show_if": {"field": "gender", "equals": "Other"}
+        },
+        {
+          "id": "age",
+          "type": "text",
+          "label": "Approximately how old are you? (18+; a range of ±5 years is fine)",
+          "required": true,
+          "meta": true
+        },
+        {
+          "id": "race",
+          "type": "select",
+          "label": "What's your race?",
+          "required": true,
+          "meta": true,
+          "options": [
+            "Asian",
+            "Black or African American",
+            "Caucasian or White",
+            "Hispanic or Latino",
+            "Indigenous or Aboriginal",
+            "Middle Eastern",
+            "Pacific Islander",
+            "Prefer not to say",
+            "Other"
+          ],
+          "other_id": "race_other"
+        },
+        {
+          "id": "race_other",
+          "type": "text",
+          "label": "Race — other (please specify)",
+          "required": false,
+          "meta": true,
+          "show_if": {"field": "race", "equals": "Other"}
+        },
+        {
+          "id": "education",
+          "type": "text",
+          "label": "What is your educational background?",
+          "required": false,
+          "meta": true
+        },
+        {
+          "id": "occupation",
+          "type": "select",
+          "label": "What do you do for work?",
+          "required": true,
+          "meta": true,
+          "options": ["Student", "Employee", "Unemployed", "Retired", "Other"],
+          "other_id": "occupation_other"
+        },
+        {
+          "id": "occupation_other",
+          "type": "text",
+          "label": "Occupation — other (please specify)",
+          "required": false,
+          "meta": true,
+          "show_if": {"field": "occupation", "equals": "Other"}
+        }
+      ]
+    },
+    {
+      "id": "profile_topics",
+      "title": "Interests & Personality (used in conversation)",
+      "questions": [
+        {
+          "id": "free_time",
+          "type": "textarea",
+          "label": "How do you prefer to spend your free time for leisure and enjoyment?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "How do you prefer to spend your free time for leisure and enjoyment?"
+        },
+        {
+          "id": "movies",
+          "type": "multiselect",
+          "label": "What are your favorite movies or TV show genres?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "What are your favorite movies or TV show genres? (Multiple Choices)",
+          "options": [
+            "Action",
+            "Comedy",
+            "Drama",
+            "Horror",
+            "Mystery",
+            "Romance",
+            "Sci-fi",
+            "Thriller",
+            "Documentary",
+            "Animation",
+            "Other"
+          ],
+          "other_id": "movies_other"
+        },
+        {
+          "id": "movies_other",
+          "type": "text",
+          "label": "Movies/TV — other",
+          "required": false,
+          "show_if": {"field": "movies", "includes": "Other"}
+        },
+        {
+          "id": "music",
+          "type": "multiselect",
+          "label": "What kind of music do you enjoy listening to the most?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "What kind of music do you enjoy listening to the most? (Multiple Choices)",
+          "options": [
+            "Pop",
+            "Rock",
+            "Classical",
+            "Jazz",
+            "Hip-hop",
+            "Country",
+            "Electronic",
+            "R&B",
+            "Folk",
+            "Other"
+          ],
+          "other_id": "music_other"
+        },
+        {
+          "id": "music_other",
+          "type": "text",
+          "label": "Music — other",
+          "required": false,
+          "show_if": {"field": "music", "includes": "Other"}
+        },
+        {
+          "id": "games",
+          "type": "multiselect",
+          "label": "What kind of games do you enjoy the most?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "What kind of  games do you enjoy the most? (Multiple Choices)",
+          "options": [
+            "Board games",
+            "Puzzle games",
+            "Video games",
+            "Card games",
+            "Sports games",
+            "Role-playing games",
+            "Other"
+          ],
+          "other_id": "games_other"
+        },
+        {
+          "id": "games_other",
+          "type": "text",
+          "label": "Games — other",
+          "required": false,
+          "show_if": {"field": "games", "includes": "Other"}
+        },
+        {
+          "id": "food",
+          "type": "multiselect",
+          "label": "What is your favorite food?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "What is your favorite food? (Multiple Choices)",
+          "options": [
+            "Italian cuisine",
+            "Chinese cuisine",
+            "Japanese cuisine",
+            "Mexican cuisine",
+            "Middle Eastern cuisine",
+            "Indian cuisine",
+            "American cuisine",
+            "Vegetarian/Vegan",
+            "Other"
+          ],
+          "other_id": "food_other"
+        },
+        {
+          "id": "food_other",
+          "type": "text",
+          "label": "Food — other",
+          "required": false,
+          "show_if": {"field": "food", "includes": "Other"}
+        },
+        {
+          "id": "achievement",
+          "type": "select",
+          "label": "What is your proudest personal achievement to date?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "What is your proudest personal achievements to date? (Single Choice)",
+          "options": [
+            "Graduating from school or university",
+            "Career milestone",
+            "Personal growth or overcoming a challenge",
+            "Creative accomplishment",
+            "Work-related project",
+            "Other"
+          ],
+          "other_id": "achievement_other"
+        },
+        {
+          "id": "achievement_other",
+          "type": "text",
+          "label": "Achievement — other",
+          "required": false,
+          "show_if": {"field": "achievement", "equals": "Other"}
+        },
+        {
+          "id": "challenge",
+          "type": "select",
+          "label": "Can you share any significant challenge you have faced currently?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "Can you share any significant challenge you have faced currently? (Single Choice)",
+          "options": [
+            "Balancing responsibilities",
+            "Financial hardship",
+            "Health-related issues",
+            "Work or study pressure",
+            "Relationship difficulties",
+            "Other"
+          ],
+          "other_id": "challenge_other"
+        },
+        {
+          "id": "challenge_other",
+          "type": "text",
+          "label": "Challenge — other",
+          "required": false,
+          "show_if": {"field": "challenge", "equals": "Other"}
+        },
+        {
+          "id": "recent_focus",
+          "type": "select",
+          "label": "What is your recent area of focus or goal?",
+          "required": false,
+          "profile_topic": true,
+          "prompt_label": "What is your recent area of focus or goal? (Single Choice)",
+          "options": [
+            "Educational pursuits and learning new skills",
+            "Career development",
+            "Health and fitness",
+            "Relationships and family",
+            "Creative projects",
+            "Other"
+          ],
+          "other_id": "recent_focus_other"
+        },
+        {
+          "id": "recent_focus_other",
+          "type": "text",
+          "label": "Recent focus — other",
+          "required": false,
+          "show_if": {"field": "recent_focus", "equals": "Other"}
+        },
+        {
+          "id": "personality",
+          "type": "multiselect",
+          "label": "How would you describe your personality in a few words?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "How would you describe your personality in a few words? (Multiple Choices)",
+          "options": [
+            "Outgoing",
+            "Introverted",
+            "Creative",
+            "Analytical",
+            "Empathetic",
+            "Adventurous",
+            "Calm",
+            "Other"
+          ],
+          "other_id": "personality_other"
+        },
+        {
+          "id": "personality_other",
+          "type": "text",
+          "label": "Personality — other",
+          "required": false,
+          "show_if": {"field": "personality", "includes": "Other"}
+        },
+        {
+          "id": "dislikes",
+          "type": "multiselect",
+          "label": "What is something you strongly dislike or hate?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "What is something you strongly dislike or hate? (Multiple Choices)",
+          "options": [
+            "Betrayal",
+            "Cruelty",
+            "Negativity",
+            "Dishonesty",
+            "Loud noise",
+            "Waiting in lines",
+            "Other"
+          ],
+          "other_id": "dislikes_other"
+        },
+        {
+          "id": "dislikes_other",
+          "type": "text",
+          "label": "Dislikes — other",
+          "required": false,
+          "show_if": {"field": "dislikes", "includes": "Other"}
+        },
+        {
+          "id": "weather",
+          "type": "select",
+          "label": "What type of weather do you enjoy the most?",
+          "required": true,
+          "profile_topic": true,
+          "prompt_label": "What type of weather do you enjoy the most? (Multiple Choices)",
+          "options": ["Sunny", "Rainy", "Snowy", "Cloudy", "Windy", "Other"],
+          "other_id": "weather_other"
+        },
+        {
+          "id": "weather_other",
+          "type": "text",
+          "label": "Weather — other",
+          "required": false,
+          "show_if": {"field": "weather", "equals": "Other"}
+        },
+        {
+          "id": "comments",
+          "type": "textarea",
+          "label": "Any additional comments?",
+          "required": false,
+          "meta": true
+        }
+      ]
+    }
+  ]
+}

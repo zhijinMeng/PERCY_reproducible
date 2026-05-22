@@ -23,7 +23,7 @@ ok "rospack + launch 文件"
 
 echo "=== 2. Python 依赖 ==="
 python3 -c "from pal_interaction_msgs.msg import TtsAction; print('  pal_interaction_msgs')"
-python3 -c "import webrtcvad, openai; assert openai.__version__.startswith('1.'); print('  openai', openai.__version__, '+ webrtcvad')" \
+python3 -c "import webrtcvad, openai; from nltk.sentiment.vader import SentimentIntensityAnalyzer; assert openai.__version__.startswith('1.'); SentimentIntensityAnalyzer(); print('  openai', openai.__version__, '+ webrtcvad + VADER')" \
   || fail "运行: bash /workspace/docker_ros1_noetic/install_dialogue_deps.sh"
 
 echo "=== 3. 已安装节点（仅检查文件，不启动）==="

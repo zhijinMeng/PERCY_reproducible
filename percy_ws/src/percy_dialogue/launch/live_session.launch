@@ -5,12 +5,50 @@
   <arg name="audio_source" default="host_usb"/>
   <arg name="audio_topic" default="$(eval '/audio/rode' if arg('audio_source') == 'host_usb' else '/audio/channel0')"/>
   <arg name="output_root" default="__auto__"/>
-  <arg name="post_tts_mute_sec" default="1.2"/>
+  <arg name="post_tts_mute_sec" default="1.0"/>
   <arg name="end_silence_sec" default="0.8"/>
+  <arg name="min_speech_sec" default="0.8"/>
+  <arg name="min_whisper_sec" default="1.2"/>
+  <arg name="noise_gate_only_at_start" default="true"/>
+  <arg name="noise_gate_start_frames" default="4"/>
+  <arg name="reject_short_hallucinations" default="true"/>
   <arg name="audio_gain" default="2.0"/>
+  <arg name="vad_backend" default="silero"/>
   <arg name="vad_mode" default="3"/>
+  <arg name="silero_threshold" default="0.5"/>
+  <arg name="silero_speech_pad_ms" default="100"/>
+  <arg name="enable_noise_gate" default="false"/>
+  <arg name="noise_gate_rms" default="0"/>
+  <arg name="noise_gate_profile_wav" default="__auto__"/>
+  <arg name="noise_gate_capture_gain" default="2.5"/>
+  <arg name="noise_gate_margin" default="1.35"/>
+  <arg name="noise_gate_hangover_ratio" default="1.0"/>
+  <arg name="noise_gate_start_ratio" default="0.65"/>
+  <arg name="noise_gate_min_active_frames" default="3"/>
   <arg name="max_utterance_sec" default="25.0"/>
   <arg name="warmup_seconds" default="1.0"/>
+  <arg name="enable_affect" default="true"/>
+  <arg name="enable_visual_affect" default="true"/>
+  <arg name="enable_affect_prompt" default="true"/>
+  <arg name="affect_async" default="true"/>
+  <arg name="enable_profile" default="true"/>
+  <arg name="profile_followups_per_topic" default="3"/>
+  <arg name="visual_emotion_topic" default="emotiondetect_result"/>
+  <arg name="face_detections_topic" default=""/>
+  <arg name="affect_w_visual" default="0.6"/>
+  <arg name="affect_w_text" default="0.4"/>
+  <!-- 论文视觉 FER：笔记本跑 PERCY emotion_model/streamdata.py（非机器人 PAL） -->
+  <arg name="enable_emotion_model" default="true"/>
+  <arg name="emotion_show_debug" default="false"/>
+  <arg name="emotion_camera_topic" default="$(arg camera_topic)"/>
+
+  <group if="$(arg enable_emotion_model)">
+    <node pkg="emotion_model" type="streamdata.py" name="visual_emotion" output="screen"
+          respawn="true" respawn_delay="5">
+      <param name="show_debug_window" value="$(arg emotion_show_debug)"/>
+      <param name="camera_topic" value="$(arg emotion_camera_topic)"/>
+    </node>
+  </group>
 
   <group if="$(eval arg('audio_source') == 'host_usb')">
     <node pkg="percy" type="host_rode_capture.py" name="host_rode_capture" output="screen"
@@ -47,10 +85,36 @@
     <param name="audio_topic" value="$(arg audio_topic)"/>
     <param name="post_tts_mute_sec" value="$(arg post_tts_mute_sec)"/>
     <param name="end_silence_sec" value="$(arg end_silence_sec)"/>
+    <param name="min_speech_sec" value="$(arg min_speech_sec)"/>
+    <param name="min_whisper_sec" value="$(arg min_whisper_sec)"/>
+    <param name="noise_gate_only_at_start" value="$(arg noise_gate_only_at_start)"/>
+    <param name="noise_gate_start_frames" value="$(arg noise_gate_start_frames)"/>
+    <param name="reject_short_hallucinations" value="$(arg reject_short_hallucinations)"/>
     <param name="audio_gain" value="$(arg audio_gain)"/>
+    <param name="vad_backend" value="$(arg vad_backend)"/>
     <param name="vad_mode" value="$(arg vad_mode)"/>
+    <param name="silero_threshold" value="$(arg silero_threshold)"/>
+    <param name="silero_speech_pad_ms" value="$(arg silero_speech_pad_ms)"/>
+    <param name="enable_noise_gate" value="$(arg enable_noise_gate)"/>
+    <param name="noise_gate_rms" value="$(arg noise_gate_rms)"/>
+    <param name="noise_gate_profile_wav" value="$(arg noise_gate_profile_wav)"/>
+    <param name="noise_gate_capture_gain" value="$(arg noise_gate_capture_gain)"/>
+    <param name="noise_gate_margin" value="$(arg noise_gate_margin)"/>
+    <param name="noise_gate_hangover_ratio" value="$(arg noise_gate_hangover_ratio)"/>
+    <param name="noise_gate_start_ratio" value="$(arg noise_gate_start_ratio)"/>
+    <param name="noise_gate_min_active_frames" value="$(arg noise_gate_min_active_frames)"/>
     <param name="max_utterance_sec" value="$(arg max_utterance_sec)"/>
     <param name="data_root" value="$(arg output_root)"/>
     <param name="play_greeting" value="true"/>
+    <param name="enable_affect" value="$(arg enable_affect)"/>
+    <param name="enable_visual_affect" value="$(arg enable_visual_affect)"/>
+    <param name="enable_affect_prompt" value="$(arg enable_affect_prompt)"/>
+    <param name="affect_async" value="$(arg affect_async)"/>
+    <param name="enable_profile" value="$(arg enable_profile)"/>
+    <param name="profile_followups_per_topic" value="$(arg profile_followups_per_topic)"/>
+    <param name="visual_emotion_topic" value="$(arg visual_emotion_topic)"/>
+    <param name="face_detections_topic" value="$(arg face_detections_topic)"/>
+    <param name="affect_w_visual" value="$(arg affect_w_visual)"/>
+    <param name="affect_w_text" value="$(arg affect_w_text)"/>
   </node>
 </launch>

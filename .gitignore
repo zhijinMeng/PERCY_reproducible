@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 .venv-whisper/
+.percy-fer-venv/
 percy_data/
 whole_video_h264.mp4
 percy_session_*.zip

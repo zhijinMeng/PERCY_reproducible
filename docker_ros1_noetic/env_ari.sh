@@ -72,3 +72,21 @@ if command -v arecord >/dev/null 2>&1 || [[ -f /proc/asound/cards ]]; then
     fi
   fi
 fi
+
+# PERCY + percy_ws（采集/对话）；percy_ws overlay 不会自动带上 emotion_model
+if [[ -f /workspace/PERCY/devel/setup.bash ]]; then
+  # shellcheck source=/dev/null
+  source /workspace/PERCY/devel/setup.bash
+fi
+if [[ -f /workspace/percy_ws/devel/setup.bash ]]; then
+  # shellcheck source=/dev/null
+  source /workspace/percy_ws/devel/setup.bash
+fi
+# emotion_model 节点在 PERCY/devel/lib；勿把 PERCY/src 置顶 ROS_PACKAGE_PATH，
+# 否则 roslaunch 会从 scripts/ 找未 chmod 的 .py 并报 Cannot locate node。
+if [[ -d /workspace/PERCY/devel ]]; then
+  export CMAKE_PREFIX_PATH="/workspace/percy_ws/devel:/workspace/PERCY/devel:/opt/ros/noetic"
+elif [[ -d /workspace/PERCY/src/emotion_model ]]; then
+  export ROS_PACKAGE_PATH="/workspace/PERCY/src:${ROS_PACKAGE_PATH:-}"
+  export CMAKE_PREFIX_PATH="/workspace/percy_ws/devel:${CMAKE_PREFIX_PATH:-/opt/ros/noetic}"
+fi

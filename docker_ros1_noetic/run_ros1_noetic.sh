@@ -8,6 +8,7 @@ FORCE_PULL=0
 REBUILD=0
 ARI=0
 AUDIO=0
+GPU=0
 while [[ "${1:-}" == -* ]]; do
   case "$1" in
     --small) SMALL=1 ;;
@@ -16,13 +17,19 @@ while [[ "${1:-}" == -* ]]; do
     --ari) ARI=1 ;;
     --audio) AUDIO=1 ;;
     --no-audio) AUDIO=-1 ;;
+    --gpu) GPU=1 ;;
+    --no-gpu) GPU=-1 ;;
     -h|--help)
-      echo "用法: $0 [--ari] [--audio|--no-audio] [--small] [--pull] [--rebuild]"
+      echo "用法: $0 [--ari] [--audio|--no-audio] [--gpu|--no-gpu] [--small] [--pull] [--rebuild]"
       echo "  默认：本地镜像 research/ros1-noetic-percy:local（Dockerfile 含 audio_common_msgs）"
       echo "  --ari     进入容器后自动 source env_ari.sh（连机器人 roscore）"
       echo "  --audio   挂载宿主机 /dev/snd + Pulse（笔记本 USB 麦）"
       echo "  --no-audio  不挂载声卡（禁用自动检测 USB 麦）"
-      echo "  未指定时：若宿主机检测到 Rode 等 USB 麦，自动等同 --audio"
+      echo "  --gpu       将 NVIDIA GPU 透传给容器（可选，视觉 FER 默认 CPU）"
+      echo "  --no-gpu    禁用 GPU 透传"
+      echo "  未指定时：检测到 USB 麦则 --audio；Docker 已配置 NVIDIA 运行时则 --gpu"
+      echo "  GPU 透传失败时: bash docker_ros1_noetic/install_nvidia_container_toolkit.sh"
+      echo "  也可 export ROS1_DOCKER_GPU=1 或 ROS1_DOCKER_GPU=0"
       echo "  --small   使用 ros:noetic-ros-base（更小；进容器后需自行 apt 装 ros-noetic-audio-common-msgs）"
       echo "  --pull    仅在使用官方镜像变量时 docker pull"
       echo "  --rebuild 强制重新 docker build 本地镜像"
@@ -106,6 +113,43 @@ _maybe_auto_enable_audio() {
 }
 _maybe_auto_enable_audio
 
+# Docker 需单独安装 nvidia-container-toolkit（仅有 nvidia-smi 不够）
+_docker_nvidia_gpu_ready() {
+  docker info 2>/dev/null | grep -qiE 'nvidia|nvidia-container'
+}
+
+GPU_ARGS=()
+if [[ "${ROS1_DOCKER_GPU:-}" == "1" ]]; then
+  GPU=1
+elif [[ "${ROS1_DOCKER_GPU:-}" == "0" ]]; then
+  GPU=-1
+fi
+if [[ "$GPU" -eq -1 ]]; then
+  :
+elif [[ "$GPU" -eq 1 ]]; then
+  if _docker_nvidia_gpu_ready; then
+    GPU_ARGS=(--gpus all)
+    echo "已启用 Docker GPU 透传"
+  else
+    echo "错误: 已指定 --gpu，但 Docker 未配置 NVIDIA Container Toolkit。"
+    echo "  宿主机执行: bash $SCRIPT_DIR/install_nvidia_container_toolkit.sh"
+    echo "  或先进入容器: $0 --no-gpu"
+    exit 1
+  fi
+elif _docker_nvidia_gpu_ready; then
+  if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1; then
+    GPU_ARGS=(--gpus all)
+    echo "已启用 Docker GPU 透传（emotion_model 可用 CUDA）"
+  else
+    echo "警告: Docker 已配置 NVIDIA 运行时，但 nvidia-smi 失败（常见: driver/library version mismatch）。"
+    echo "  本次跳过 --gpus；对话采集不受影响（FER 默认 CPU）。"
+    echo "  根治: 重启电脑使内核驱动与用户态库一致；或显式: $0 --no-gpu"
+  fi
+elif command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1; then
+  echo "检测到 NVIDIA GPU，但 Docker 尚未配置 GPU 运行时（跳过 --gpus）。"
+  echo "  安装后可用 --gpu: bash $SCRIPT_DIR/install_nvidia_container_toolkit.sh"
+fi
+
 echo "镜像: $IMAGE"
 echo "挂载: $HOST_WS -> $CONTAINER_WS"
 echo "进入后已 source /opt/ros/noetic/setup.bash。"
@@ -167,6 +211,7 @@ fi
 
 exec docker run -it --rm \
   --net=host \
+  "${GPU_ARGS[@]}" \
   "${ADD_HOST_ARGS[@]}" \
   "${AUDIO_ARGS[@]}" \
   -e PYTHONUNBUFFERED=1 \

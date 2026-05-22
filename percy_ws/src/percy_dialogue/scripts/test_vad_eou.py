@@ -11,12 +11,23 @@ Prints per-frame speech/silence timeline and which path ended the utterance.
 from __future__ import print_function
 
 import argparse
+import os
 import struct
 import sys
 import wave
 
 import webrtcvad
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
+
+from vad_noise_gate import (
+    amplify_pcm_int16,
+    calibrate_rms_threshold_from_wav,
+    is_active_speech_frame,
+    resolve_auto_noise_profile,
+)
 
 FRAME_MS = 30
 
@@ -51,6 +62,12 @@ def simulate_vad_eou(
     min_speech_sec=0.35,
     min_whisper_sec=0.5,
     max_utterance_sec=12.0,
+    audio_gain=1.0,
+    enable_noise_gate=False,
+    noise_gate_rms=0,
+    noise_gate_hangover=1.0,
+    noise_gate_start_ratio=0.5,
+    noise_gate_min_active_frames=3,
     verbose=False,
 ):
     vad = webrtcvad.Vad(vad_mode)
@@ -61,30 +78,48 @@ def simulate_vad_eou(
     speech_started = False
     speech_start_t = None
     last_speech_t = None
+    active_streak = 0
     utterance_pcm = bytearray()
     results = []
 
     offset = 0
     frame_idx = 0
     while offset + frame_bytes <= len(pcm):
-        frame = pcm[offset : offset + frame_bytes]
+        raw = pcm[offset : offset + frame_bytes]
         offset += frame_bytes
+        frame = amplify_pcm_int16(raw, audio_gain)
         now = t0 + frame_idx * frame_dt
         frame_idx += 1
 
-        try:
-            is_speech = vad.is_speech(frame, sample_rate)
-        except Exception:
-            continue
+        if enable_noise_gate:
+            is_speech = is_active_speech_frame(
+                vad,
+                frame,
+                sample_rate,
+                noise_gate_rms,
+                speech_started=speech_started,
+                hangover_ratio=noise_gate_hangover,
+                start_ratio=noise_gate_start_ratio,
+            )
+        else:
+            try:
+                is_speech = vad.is_speech(frame, sample_rate)
+            except Exception:
+                continue
 
         if is_speech:
             if not speech_started:
                 speech_started = True
                 speech_start_t = now
+                last_speech_t = now
                 utterance_pcm = bytearray()
+                active_streak = 0
                 if verbose:
                     print("  t=%.2fs speech_start" % now)
-            last_speech_t = now
+            active_streak += 1
+            min_af = max(1, noise_gate_min_active_frames)
+            if not enable_noise_gate or active_streak >= min_af:
+                last_speech_t = now
             utterance_pcm.extend(frame)
             duration = now - speech_start_t
             if duration >= max_utterance_sec:
@@ -111,6 +146,7 @@ def simulate_vad_eou(
         if not speech_started:
             continue
 
+        active_streak = 0
         utterance_pcm.extend(frame)
         silence = now - last_speech_t
         duration = now - speech_start_t
@@ -181,21 +217,56 @@ def main():
     parser = argparse.ArgumentParser(description="Replay live_dialogue VAD EOU on wav")
     parser.add_argument("wav", nargs="+", help="16 kHz mono/stereo PCM wav")
     parser.add_argument("--vad-mode", type=int, default=3)
+    parser.add_argument("--audio-gain", type=float, default=1.0)
     parser.add_argument("--end-silence", type=float, default=0.8)
     parser.add_argument("--min-speech", type=float, default=0.35)
     parser.add_argument("--min-whisper", type=float, default=0.5)
     parser.add_argument("--max-utterance", type=float, default=12.0)
+    parser.add_argument("--enable-noise-gate", action="store_true")
+    parser.add_argument("--noise-gate-rms", type=int, default=0)
+    parser.add_argument("--noise-gate-profile", default="__auto__")
+    parser.add_argument("--noise-gate-capture-gain", type=float, default=2.5)
+    parser.add_argument("--noise-gate-margin", type=float, default=2.0)
+    parser.add_argument("--noise-gate-hangover", type=float, default=1.0)
+    parser.add_argument("--noise-gate-start-ratio", type=float, default=0.5)
+    parser.add_argument("--noise-gate-min-active-frames", type=int, default=3)
+    parser.add_argument("--data-root", default=os.environ.get("PERCY_DATA_DIR", ""))
     parser.add_argument("--timeline", action="store_true", help="print 0.5s speech ratio")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
+
+    gate_rms = args.noise_gate_rms
+    if args.enable_noise_gate and gate_rms <= 0:
+        profile = args.noise_gate_profile
+        if profile in ("__auto__", "auto"):
+            profile = resolve_auto_noise_profile(args.data_root)
+        if profile and os.path.isfile(profile):
+            gate_rms = calibrate_rms_threshold_from_wav(
+                profile,
+                capture_gain=args.noise_gate_capture_gain,
+                live_gain=args.audio_gain,
+                margin=args.noise_gate_margin,
+            )
+        else:
+            gate_rms = 1100
 
     for path in args.wav:
         pcm, sr = read_wav_pcm(path)
         dur = pcm_duration_sec(pcm, sr)
         print("=== %s ===" % path)
         print(
-            "  audio=%.2fs sr=%d  params: end_silence=%.1fs max_utterance=%.1fs vad_mode=%d"
-            % (dur, sr, args.end_silence, args.max_utterance, args.vad_mode)
+            "  audio=%.2fs sr=%d  params: end_silence=%.1fs max_utterance=%.1fs "
+            "vad_mode=%d gain=%.1f noise_gate=%s rms>=%s"
+            % (
+                dur,
+                sr,
+                args.end_silence,
+                args.max_utterance,
+                args.vad_mode,
+                args.audio_gain,
+                args.enable_noise_gate,
+                gate_rms if args.enable_noise_gate else "off",
+            )
         )
         if args.timeline:
             print("  speech_ratio (0.5s windows, 1.0=all speech frames):")
@@ -211,6 +282,12 @@ def main():
             min_speech_sec=args.min_speech,
             min_whisper_sec=args.min_whisper,
             max_utterance_sec=args.max_utterance,
+            audio_gain=args.audio_gain,
+            enable_noise_gate=args.enable_noise_gate,
+            noise_gate_rms=gate_rms,
+            noise_gate_hangover=args.noise_gate_hangover,
+            noise_gate_start_ratio=args.noise_gate_start_ratio,
+            noise_gate_min_active_frames=args.noise_gate_min_active_frames,
             verbose=args.verbose,
         )
         if not results:

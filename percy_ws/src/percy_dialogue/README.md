@@ -8,7 +8,7 @@
 
 - `percy`（同工作区）
 - `pal_interaction_msgs`、`audio_common_msgs`
-- Python：`openai==1.14.1`、`webrtcvad` → `~/Research/docker_ros1_noetic/install_dialogue_deps.sh`
+- Python：`openai==1.14.1`、`webrtcvad`、`nltk`/VADER → `~/Research/docker_ros1_noetic/install_dialogue_deps.sh`
 - `OPENAI_API_KEY`；可选 `PERCY_DATA_DIR`
 
 ## 一键采集（推荐）
@@ -31,7 +31,9 @@ export PERCY_DATA_DIR=/workspace/percy_data
 roslaunch percy_dialogue live_session.launch session_id:=18
 ```
 
-常用参数：`end_silence_sec`、`max_utterance_sec`、`vad_mode`、`audio_gain`（见主文档）。
+常用参数：`end_silence_sec`、`max_utterance_sec`、`vad_mode`、`audio_gain`、`enable_affect`（见主文档）。
+
+情感：**VADER**（文本，本机）+ **`emotiondetect_result`**（视觉，本机 `PERCY/.../streamdata.py` 订阅头相机）→ 0.6/0.4 融合。
 
 ## Session 产出（`$PERCY_DATA_DIR/<id>/`）
 
