@@ -4,7 +4,7 @@ Repository for the **MERCI** corpus (Multimodal dataset for Emotionally-aware pe
 
 | Resource | Link |
 |----------|------|
-| Dataset | https://huggingface.co/datasets/zhijinRBS/MERCI |
+| Dataset | https://huggingface.co/datasets/zhijin-meng/MERCI |
 | PERCY (dialogue stack) | https://github.com/zhijinMeng/PERCY |
 | Paper | Extended CBMI 2025 → MTAP special issue |
 

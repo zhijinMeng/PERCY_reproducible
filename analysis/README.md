@@ -2,7 +2,7 @@
 
 Scripts to reproduce the MTAP extended MERCI paper: cross-modal audit, human conflict validation (§4.1), and indexing benchmarks A/B/C.
 
-- **Dataset:** [Hugging Face `zhijinRBS/MERCI`](https://huggingface.co/datasets/zhijinRBS/MERCI)
+- **Dataset:** [Hugging Face `zhijin-meng/MERCI`](https://huggingface.co/datasets/zhijin-meng/MERCI)
 - **Collection stack:** [PERCY](https://github.com/zhijinMeng/PERCY)
 
 ## Data layout
