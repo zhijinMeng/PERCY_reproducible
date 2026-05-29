@@ -1,16 +1,18 @@
 # MERCI
 
-Audit scripts, human conflict validation, and indexing benchmarks (A/B/C) for the **MERCI** corpus (Multimodal dataset for Emotionally-aware peRsonalised Conversational Interactions).
+Repository for the **MERCI** corpus (Multimodal dataset for Emotionally-aware peRsonalised Conversational Interactions) and related tooling.
 
 | Resource | Link |
 |----------|------|
 | Dataset | https://huggingface.co/datasets/zhijinRBS/MERCI |
-| PERCY (collection) | https://github.com/zhijinMeng/PERCY |
+| PERCY (dialogue stack) | https://github.com/zhijinMeng/PERCY |
 | Paper | Extended CBMI 2025 → MTAP special issue |
 
-## Quick start
+## Analysis & benchmarks (`analysis/`)
 
-See [`analysis/README.md`](analysis/README.md) for environment setup, data paths, and commands to reproduce tables in the article.
+Audit scripts, human conflict validation (§4.1), and indexing benchmarks A/B/C for the MTAP extended article.
+
+See [`analysis/README.md`](analysis/README.md) for setup (`NORMALIZED_MEDIA_ROOT`), dependencies, and reproduction commands.
 
 ```bash
 cd analysis
@@ -20,18 +22,40 @@ export NORMALIZED_MEDIA_ROOT=/path/to/normalized_media
 python run_downstream_benchmarks.py
 ```
 
-## Layout
+## Robot-side recording bundle (legacy layout)
 
+This repo also contains a **PERCY reproducible** deployment bundle: timestamp-aligned A/V recording (`percy_ws`) and LLM dialogue stack (`PERCY/`).
+
+### Layout
+
+- `percy_ws/` — Catkin workspace with `percy` (stamp-aligned recorder, H.264 post-process)
+- `PERCY/` — Catkin workspace with dialogue / GPT packages
+- `docker/`, `docs/` — optional laptop + Docker workflow
+
+### On the ARI robot (Ubuntu 20.04 + ROS Noetic)
+
+```bash
+git clone git@github.com:zhijinMeng/MERCI.git
+cd MERCI
+
+sudo apt-get update
+sudo apt-get install -y ffmpeg ros-noetic-audio-common-msgs python3-pip python3-opencv
+
+pip3 install openai pandas
+
+cd percy_ws && catkin_make && source devel/setup.bash
+cd ../PERCY && catkin_make && source devel/setup.bash
+
+export PERCY_DATA_DIR=~/percy_data
+mkdir -p "$PERCY_DATA_DIR"
+export OPENAI_API_KEY="your-key"
+
+roslaunch percy record_aligned.launch session_id:=0
+roslaunch chatting_system start.launch id:=0
 ```
-analysis/          # Python scripts, query specs, published benchmark CSVs
-  README.md
-  requirements.txt
-  run_*.py
-  merci_*.py
-  benchmark_c_queries.json
-  cross_modal_per_session.csv
-```
+
+Use `ROS_MASTER_URI=http://localhost:11311` when running entirely on the robot. See `docs/DOCKER_ROS1.md` for laptop + Docker recording.
 
 ## Citation
 
-If you use this code or the MERCI release, please cite the MERCI CBMI 2025 paper and the extended journal version when available.
+If you use MERCI data, analysis code, or this collection bundle, please cite the MERCI CBMI 2025 paper and the extended journal version when available.

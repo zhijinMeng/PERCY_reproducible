@@ -1,0 +1,172 @@
+# 录制对齐音视频（percy `record_aligned`）
+
+在笔记本 Docker 里录机器人 **头相机 + channel0 音频**，输出到 **`~/Research/percy_data/<session_id>/`**。
+
+更完整的连机器人步骤见：**[`DOCKER_ROS1_连机器人说明.md`](DOCKER_ROS1_连机器人说明.md)**。
+
+---
+
+## 1. 录前检查（宿主机 + 容器）
+
+### 宿主机（网线）
+
+```bash
+ethtool enp3s0 | grep Speed    # 建议 1000Mb/s；10Mb/s 时 raw 只有 ~1fps
+ping -c 2 10.68.0.1
+```
+
+### 进 Docker（若尚未进入）
+
+```bash
+cd ~/Research
+export ARI_ROS_IP=10.68.0.130      # 改成你本机 10.68.0.x
+export ARI_ROS_USE_LOOPBACK=0
+./ros1_ari.sh
+```
+
+### 容器内（确认在发流）
+
+```bash
+source /workspace/docker_ros1_noetic/env_ari.sh
+source /workspace/percy_ws/devel/setup.bash
+
+rostopic info /head_front_camera/color/image_raw   # 须有 Publishers
+rostopic hz /head_front_camera/color/image_raw       # 建议 ~25–30（千兆网线）
+rostopic hz /audio/channel0                          # 约 15 msg/s 正常（不是 16kHz）
+```
+
+---
+
+## 2. 开始录制（推荐：一条命令，自动等 finalize）
+
+在 Docker 里（`/workspace` = 宿主机 `~/Research`）：
+
+```bash
+source /workspace/docker_ros1_noetic/env_ari.sh
+source /workspace/percy_ws/devel/setup.bash
+export PERCY_DATA_DIR=/workspace/percy_data
+
+# 把 10 换成新 session 编号；录完 Ctrl+C 一次，脚本会自动等到音画对齐完成
+./record_aligned.sh 10
+```
+
+宿主机也可（已进过 Docker 且挂载了 Research 时）：
+
+```bash
+cd ~/Research && ./record_aligned.sh 10
+```
+
+**流程：**
+
+1. `Both streams seen` → `Recording -> ...`
+2. 录 **15～20 分钟**（或任意时长）
+3. **Ctrl+C 一次** — roslaunch 退出后脚本**自动**跑 `wait_finalize.sh`
+4. 终端出现 `finalize 完成` 和 `av_sync_error_sec` 即可离开
+
+长片 finalize 可能要 **几分钟～十几分钟**（可另开终端 `tail -f percy_data/10/finalize.log` 看进度）。
+
+### 仍想用手动两步时
+
+```bash
+roslaunch percy record_aligned.launch session_id:=10
+# Ctrl+C 后:
+bash /workspace/percy_ws/src/percy/scripts/wait_finalize.sh /workspace/percy_data/10
+```
+
+---
+
+## 3. 默认与可选参数
+
+| 参数 | 默认 | 说明 |
+|------|------|------|
+| `session_id` | `0` | 输出子目录名 |
+| `camera_topic` | `/head_front_camera/color/image_raw` | 头相机 raw |
+| `audio_topic` | `/audio/channel0` | 与 `/audio/raw` 相同 |
+| `output_root` | `$PERCY_DATA_DIR` 或 ws/DATA | 建议设 `PERCY_DATA_DIR` |
+
+**换胸部相机：**
+
+```bash
+roslaunch percy record_aligned.launch session_id:=8 \
+  camera_topic:=/torso_front_camera/color/image_raw
+```
+
+**换更安静的麦（人声会偏小）：**
+
+```bash
+roslaunch percy record_aligned.launch session_id:=9 \
+  audio_topic:=/audio/channel4
+```
+
+---
+
+## 4. 输出文件
+
+路径（容器 `/workspace/percy_data/7` = 宿主机 `~/Research/percy_data/7`）：
+
+| 文件 | 说明 |
+|------|------|
+| `whole_video.mp4` | 视频（无音轨；结束后转 **H.264**） |
+| `audio.wav` | 16 kHz、mono、16 bit PCM |
+| `recording_meta.json` | 帧数、stamp 跨度、`av_sync_error_sec` 等 |
+| `finalize.log` / `finalize.done` | 后台转码日志；出现 `finalize.done` 表示结束 |
+
+---
+
+## 5. 录完检查
+
+**须先等 `finalize.done` 再检查**（长片 Ctrl+C 后立刻 ffprobe 会看到未对齐的 raw MP4）。
+
+```bash
+cat ~/Research/percy_data/10/recording_meta.json | grep -E 'finalize_status|av_sync|video_duration|audio_duration'
+ffprobe -hide_banner ~/Research/percy_data/10/whole_video.mp4
+ffprobe -hide_banner ~/Research/percy_data/10/audio.wav
+```
+
+**合格参考：**
+
+- `finalize_status` 为 **`ok`**
+- `av_sync_error_sec` **< 0.1**（理想；< 0.5 也可接受）
+- `frames / video_stamp_span_sec` 约 **25～30**（千兆 + head raw）
+- meta 里 `video_codec`: `h264`
+
+试听：`vlc ~/Research/percy_data/7/whole_video.mp4`（视频）+ 同目录 `audio.wav`。
+
+---
+
+## 6. 在机器人上录（可选）
+
+笔记本带宽不够或要保底满帧时：
+
+```bash
+ssh pal@10.68.0.1
+source /opt/ros/noetic/setup.bash
+cd ~/zhijinmeng/PERCY_reproducible/percy_ws && source devel/setup.bash
+export PERCY_DATA_DIR=~/zhijinmeng/percy_data
+roslaunch percy record_aligned.launch session_id:=7
+```
+
+拷回：
+
+```bash
+scp -r pal@10.68.0.1:~/zhijinmeng/percy_data/7 ~/Research/percy_data/
+```
+
+---
+
+## 7. 常见问题
+
+| 现象 | 原因 / 处理 |
+|------|-------------|
+| 一直 `had_image=False` | 头相机未发布；`rostopic info` 看 Publishers |
+| 一直 `had_audio=False` | `/audio/channel0` 无数据 |
+| 视频很短、帧很少 | 链路 10M 或 WiFi；查 `ethtool` |
+| 很吵 / 削波 | 环境噪声大；可试 `channel4`，或避开机器人大声时刻 |
+| MP4 浏览器打不开 | 应用已转 H.264；仍不行用 VLC |
+| Ctrl+C 后 `MP4 finalize failed` / SIGTERM | 旧流程被 roslaunch 杀掉；现改为 **后台 finalize**，须跑 `wait_finalize.sh` |
+| 音画差数秒（未等 finalize） | 看的是 **转码前** 的 MP4；等 `finalize.done` 后再检查 |
+| 补救已有 session（如 9） | `python3 .../finalize_recording.py ~/Research/percy_data/9/recording_meta.json` 后 `wait_finalize.sh` |
+
+---
+
+*脚本：`percy_ws/src/percy/scripts/stamp_aligned_recorder.py` · Launch：`percy_ws/src/percy/launch/record_aligned.launch`*

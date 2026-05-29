@@ -1,14 +1,36 @@
-__pycache__/
-*.py[cod]
+# Catkin
+**/build/
+**/devel/
+**/install/
+**/logs/
+.catkin_tools/
+
+# Data / recordings
+percy_data/
+**/DATA/
+**/*.bag
+data/
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
 .venv/
 .venv-analysis/
-*.egg-info/
-.DS_Store
+venv/
+**/node_modules/
 
 # Large external corpora (download separately for cross-corpus scripts)
 analysis/meld_*_sent_emo.csv
 analysis/IEMOCAP*.csv
-
-# Local media (use NORMALIZED_MEDIA_ROOT)
 analysis/**/*.mp4
-data/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Secrets
+.env
+**/OPENAI_API_KEY*

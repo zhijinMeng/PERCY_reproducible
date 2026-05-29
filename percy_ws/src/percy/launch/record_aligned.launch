@@ -1,0 +1,26 @@
+<launch>
+  <!-- Robot RGB + onboard mic; audio slice size = delta(Image.header.stamp) * PCM rate -->
+
+  <arg name="session_id" default="0"/>
+  <arg name="camera_topic" default="/head_front_camera/color/image_raw"/>
+  <arg name="audio_topic" default="/audio/channel0"/>
+  <!-- __auto__: $PERCY_DATA_DIR or &lt;ws&gt;/src/DATA -->
+  <arg name="output_root" default="__auto__"/>
+
+  <node pkg="percy" type="stamp_aligned_recorder.py" name="stamp_aligned_recorder" output="screen">
+    <param name="session_id" value="$(arg session_id)"/>
+    <param name="camera_topic" value="$(arg camera_topic)"/>
+    <param name="audio_topic" value="$(arg audio_topic)"/>
+    <param name="output_root" value="$(arg output_root)"/>
+    <param name="use_image_stamp" value="true"/>
+    <param name="warmup_seconds" value="0.5"/>
+    <param name="video_fps_fallback" value="30.0"/>
+    <!-- OpenCV 在 Linux 上常只能写出 mp4v；结束后 ffmpeg 转 H.264 便于浏览器播放 -->
+    <param name="video_fourcc_preference" value="avc1,H264,mp4v"/>
+    <param name="video_transcode_h264" value="true"/>
+    <param name="video_fix_timeline" value="true"/>
+    <!-- 录制 &gt;120s 时 finalize 用 ultrafast；15–20min 请在 Ctrl+C 后运行 wait_finalize.sh -->
+    <param name="video_finalize_ultrafast_sec" value="120.0"/>
+    <param name="video_finalize_timeout_sec" value="7200"/>
+  </node>
+</launch>
