@@ -1,0 +1,50 @@
+{
+  "results": [
+    {
+      "setting": "MERCI in-domain (5-fold grouped CV)",
+      "model": "Frozen DistilRoBERTa + linear head",
+      "macro_f1_all": 0.6706965576530793,
+      "macro_f1_consistent": 0.4521541950113379,
+      "macro_f1_conflict": 0.46700429711479435,
+      "ci95_all_low": 0.6308004994897713,
+      "ci95_all_high": 0.7078502817769698,
+      "ci95_consistent_low": 0.3703378696761495,
+      "ci95_consistent_high": 0.521511027656228,
+      "ci95_conflict_low": 0.4158760358532048,
+      "ci95_conflict_high": 0.5111643658638543,
+      "n_rows": 911
+    },
+    {
+      "setting": "MELD -> MERCI transfer",
+      "model": "Frozen DistilRoBERTa + linear head",
+      "status": "ok",
+      "meld_train_rows": 13708,
+      "macro_f1_all": 0.35264789288377485,
+      "macro_f1_consistent": 0.2372983567013418,
+      "macro_f1_conflict": 0.20985338058508793,
+      "ci95_all_low": 0.3123956953017911,
+      "ci95_all_high": 0.388648409335166,
+      "ci95_consistent_low": 0.13287681569515186,
+      "ci95_consistent_high": 0.3224219328049927,
+      "ci95_conflict_low": 0.1445929667703861,
+      "ci95_conflict_high": 0.2721668532644142,
+      "n_rows": 911
+    },
+    {
+      "setting": "IEMOCAP -> MERCI transfer",
+      "model": "Frozen DistilRoBERTa + linear head",
+      "status": "ok",
+      "iemocap_train_rows": 7529,
+      "macro_f1_all": 0.398039234283545,
+      "macro_f1_consistent": 0.3233291298865069,
+      "macro_f1_conflict": 0.26335761991499695,
+      "ci95_all_low": 0.36526082057209064,
+      "ci95_all_high": 0.42534463394123784,
+      "ci95_consistent_low": 0.25523279130919657,
+      "ci95_consistent_high": 0.38523970946594666,
+      "ci95_conflict_low": 0.21071543836005105,
+      "ci95_conflict_high": 0.32100384005942106,
+      "n_rows": 911
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.venv-analysis/
+*.egg-info/
+.DS_Store
+
+# Large external corpora (download separately for cross-corpus scripts)
+analysis/meld_*_sent_emo.csv
+analysis/IEMOCAP*.csv
+
+# Local media (use NORMALIZED_MEDIA_ROOT)
+analysis/**/*.mp4
+data/

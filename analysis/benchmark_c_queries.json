@@ -1,0 +1,74 @@
+[
+  {
+    "qid": "Q1",
+    "text": "retrieve user turns with happy face and positive wording",
+    "kind": "consistent",
+    "filters": {"cross_modal_class": "consistent", "emotion": "happy"}
+  },
+  {
+    "qid": "Q2",
+    "text": "retrieve user turns with sad face and negative wording",
+    "kind": "consistent",
+    "filters": {"cross_modal_class": "consistent", "emotion": "sad"}
+  },
+  {
+    "qid": "Q3",
+    "text": "retrieve user turns with angry face and negative wording",
+    "kind": "consistent",
+    "filters": {"cross_modal_class": "consistent", "emotion": "angry"}
+  },
+  {
+    "qid": "Q4",
+    "text": "retrieve user turns with disgust face and negative wording",
+    "kind": "consistent",
+    "filters": {"cross_modal_class": "consistent", "emotion": "disgust"}
+  },
+  {
+    "qid": "Q5",
+    "text": "retrieve user turns with fear face and negative wording",
+    "kind": "consistent",
+    "filters": {"cross_modal_class": "consistent", "emotion": "fear"}
+  },
+  {
+    "qid": "Q6",
+    "text": "retrieve neutral user turns",
+    "kind": "neutral",
+    "filters": {"cross_modal_class": "neutral"}
+  },
+  {
+    "qid": "Q7",
+    "text": "retrieve turns with happy face but negative text",
+    "kind": "conflict",
+    "filters": {"cross_modal_class": "conflict", "emotion": "happy", "sentiment": "negative"}
+  },
+  {
+    "qid": "Q8",
+    "text": "retrieve turns with negative face but positive text",
+    "kind": "conflict",
+    "filters": {"cross_modal_class": "conflict", "sentiment": "positive"}
+  },
+  {
+    "qid": "Q9",
+    "text": "retrieve surprise face turns with non-neutral text",
+    "kind": "other",
+    "filters": {"cross_modal_class": "other"}
+  },
+  {
+    "qid": "Q10",
+    "text": "retrieve turns with positive text sentiment in conflict-like settings",
+    "kind": "conflict",
+    "filters": {"sentiment": "positive"}
+  },
+  {
+    "qid": "Q11",
+    "text": "retrieve turns with negative text sentiment in conflict-like settings",
+    "kind": "conflict",
+    "filters": {"sentiment": "negative"}
+  },
+  {
+    "qid": "Q12",
+    "text": "retrieve non-conflicting consistent affect turns",
+    "kind": "consistent",
+    "filters": {"cross_modal_class": "consistent"}
+  }
+]

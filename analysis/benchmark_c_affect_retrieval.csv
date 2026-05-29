@@ -1,0 +1,13 @@
+query_id,query_kind,query_text,relevant_n,text_recall@10,text_ndcg@10,metadata_recall@10,metadata_ndcg@10
+Q1,consistent,retrieve user turns with happy face and positive wording,166,0.018072289156626505,0.2090493674905264,0.060240963855421686,1.0
+Q2,consistent,retrieve user turns with sad face and negative wording,2,0.0,0.0,1.0,1.0
+Q3,consistent,retrieve user turns with angry face and negative wording,0,0.0,0.0,0.0,0.0
+Q4,consistent,retrieve user turns with disgust face and negative wording,16,0.0,0.0,0.625,1.0
+Q5,consistent,retrieve user turns with fear face and negative wording,0,0.0,0.0,0.0,0.0
+Q6,neutral,retrieve neutral user turns,590,0.010169491525423728,0.617585285916322,0.01694915254237288,1.0
+Q7,conflict,retrieve turns with happy face but negative text,22,0.0,0.0,0.45454545454545453,1.0
+Q8,conflict,retrieve turns with negative face but positive text,103,0.009708737864077669,0.06943122193677728,0.0970873786407767,1.0
+Q9,other,retrieve surprise face turns with non-neutral text,12,0.0,0.0,0.8333333333333334,1.0
+Q10,conflict,retrieve turns with positive text sentiment in conflict-like settings,633,0.01263823064770932,0.713654010247531,0.01579778830963665,1.0
+Q11,conflict,retrieve turns with negative text sentiment in conflict-like settings,104,0.038461538461538464,0.4729327934832576,0.09615384615384616,1.0
+Q12,consistent,retrieve non-conflicting consistent affect turns,184,0.021739130434782608,0.33798414482679845,0.05434782608695652,1.0

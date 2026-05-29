@@ -1,0 +1,101 @@
+{
+  "data_root": "/home/zhijinmeng/Research/HF_Data/percy_data/normalized_media",
+  "model_seeds": [
+    11,
+    22,
+    33
+  ],
+  "n_folds": 5,
+  "bootstrap_b": 2000,
+  "n_sessions": 30,
+  "n_user_turns": 911,
+  "n_conflict": 125,
+  "conflict_rate": 0.13721185510428102,
+  "fold_summary": [
+    {
+      "fold": 1,
+      "n_turns": 179,
+      "n_conflict": 19,
+      "conflict_rate": 0.10614525139664804
+    },
+    {
+      "fold": 2,
+      "n_turns": 186,
+      "n_conflict": 21,
+      "conflict_rate": 0.11290322580645161
+    },
+    {
+      "fold": 3,
+      "n_turns": 185,
+      "n_conflict": 39,
+      "conflict_rate": 0.21081081081081082
+    },
+    {
+      "fold": 4,
+      "n_turns": 183,
+      "n_conflict": 27,
+      "conflict_rate": 0.14754098360655737
+    },
+    {
+      "fold": 5,
+      "n_turns": 178,
+      "n_conflict": 19,
+      "conflict_rate": 0.10674157303370786
+    }
+  ],
+  "benchmark_a_conflict_prediction": [
+    {
+      "model": "Majority baseline",
+      "macro_f1": 0.4631703005303477,
+      "macro_f1_ci_low": 0.4457665283479745,
+      "macro_f1_ci_high": 0.4776204049423251,
+      "conflict_f1": 0.0,
+      "conflict_f1_ci_low": 0.0,
+      "conflict_f1_ci_high": 0.0,
+      "pr_auc": 0.13721185510428102,
+      "pr_auc_ci_low": 0.08568326661074524,
+      "pr_auc_ci_high": 0.19570622889575398
+    },
+    {
+      "model": "LogReg + TF-IDF (5-fold CV)",
+      "macro_f1": 0.49112325440194293,
+      "macro_f1_ci_low": 0.4590463068066772,
+      "macro_f1_ci_high": 0.5268041168134653,
+      "conflict_f1": 0.08,
+      "conflict_f1_ci_low": 0.023121387283236993,
+      "conflict_f1_ci_high": 0.14634146341463414,
+      "pr_auc": 0.1415107317105288,
+      "pr_auc_ci_low": 0.08619977912639046,
+      "pr_auc_ci_high": 0.19796063931301586
+    }
+  ],
+  "benchmark_b_conflict_aware_emotion": [
+    {
+      "model": "Majority baseline",
+      "full_macro_f1": 0.1965356429047302,
+      "full_macro_f1_ci_low": 0.17715990962290598,
+      "full_macro_f1_ci_high": 0.2148704102946411,
+      "conflict_f1": 0.0,
+      "conflict_f1_ci_low": 0.0,
+      "conflict_f1_ci_high": 0.0
+    },
+    {
+      "model": "Text-only LogReg (5-fold CV)",
+      "full_macro_f1": 0.2844743545043304,
+      "full_macro_f1_ci_low": 0.2526031161120169,
+      "full_macro_f1_ci_high": 0.3121544113406993,
+      "conflict_f1": 0.12093023255813953,
+      "conflict_f1_ci_low": 0.05030038486811227,
+      "conflict_f1_ci_high": 0.19277414225429637
+    },
+    {
+      "model": "Text + raw FER probs (5-fold CV)",
+      "full_macro_f1": 0.3974924646047151,
+      "full_macro_f1_ci_low": 0.33991299590664864,
+      "full_macro_f1_ci_high": 0.4358233927948274,
+      "conflict_f1": 0.38095238095238093,
+      "conflict_f1_ci_low": 0.2199824561403509,
+      "conflict_f1_ci_high": 0.5027639916346724
+    }
+  ]
+}
