@@ -10,6 +10,7 @@ from merci_message_io import canonical_messages, normalize_messages
 _ANALYSIS = Path(__file__).resolve().parent
 _CANDIDATES = [
     _ANALYSIS.parent / "data" / "normalized_media",
+    _ANALYSIS.parents[3] / "HF_Data" / "percy_data" / "normalized_media",
     _ANALYSIS.parents[4] / "HF_Data" / "percy_data" / "normalized_media",
 ]
 _DEFAULT = next((p for p in _CANDIDATES if p.exists()), _CANDIDATES[0])

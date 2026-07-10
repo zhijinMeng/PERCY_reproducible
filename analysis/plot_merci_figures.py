@@ -19,6 +19,12 @@ C_ACCENT = "#c0392b"
 C_CONFLICT_EDGE = "#922b21"  # darker red for conflict cell borders (print-visible)
 C_NEUTRAL = "#7f8c8d"
 C_STACK = ["#2e86c1", "#95a5a6", "#c0392b", "#8e44ad"]  # consistent, neutral, conflict, other
+C_PANEL = "#d6eaf8"  # light blue panels (matches Blues heatmap family)
+C_PANEL_ALT = "#ebf5fb"
+
+# Illustrative conflict turn (cross_modal_conflict_turns.csv, message_index 12).
+CONFLICT_EXAMPLE_SESSION = "00_00_00_02_07_00_00"
+CONFLICT_EXAMPLE_T_MID_SEC = 531.765
 
 EMOTIONS = ["happy", "neutral", "sad", "fear", "angry", "disgust", "surprise"]
 SENTIMENTS = ["positive", "neutral", "negative"]
@@ -35,10 +41,11 @@ MATRIX_CBAR_LABEL_FS = 13
 MATRIX_CBAR_TICK_FS = 12
 MATRIX_CELL_FS = 13
 MATRIX_TITLE_FS = 15
-# Fig. 5 (per-session): match matrix typography
-SESSION_AXIS_LABEL_FS = 11
-SESSION_TICK_FS = 10
-SESSION_TITLE_FS = 12
+# Fig. 4 (per-session): axis labels readable at \\linewidth scale in main.tex
+SESSION_AXIS_LABEL_FS = 18
+SESSION_TICK_FS = 15
+SESSION_BAR_LABEL_FS = 15  # k/n above bars (vertical; dense x-axis)
+SESSION_TITLE_FS = SESSION_AXIS_LABEL_FS
 SESSION_MEDIAN_COLOR = C_CONFLICT_EDGE
 
 
@@ -92,7 +99,7 @@ def is_valence_conflict_cell(visual: str, sentiment: str) -> bool:
 
 
 def fig_cross_modal_confusion_matrix() -> None:
-    """7x3 confusion matrix with explicit cell fills (PDF-safe colours and labels)."""
+    """7x3 valence heatmap with explicit cell fills (PDF-safe colours and labels)."""
     from matplotlib.colors import PowerNorm
     from matplotlib.patches import Rectangle
     from matplotlib.cm import ScalarMappable
@@ -118,7 +125,14 @@ def fig_cross_modal_confusion_matrix() -> None:
     row_pct *= 100
 
     # Colour = row-normalised % (0--100); PowerNorm keeps low-% cells visible in print.
-    cmap = plt.colormaps["Blues"]
+    # Cap the Blues ramp so 100% cells stay light enough for black text.
+    from matplotlib.colors import LinearSegmentedColormap
+
+    base = plt.colormaps["Blues"]
+    cmap = LinearSegmentedColormap.from_list(
+        "BluesLight",
+        [base(x) for x in np.linspace(0.05, 0.72, 256)],
+    )
     norm = PowerNorm(gamma=0.55, vmin=0, vmax=100)
     sm = ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
@@ -216,7 +230,7 @@ def fig_cross_modal_confusion_matrix() -> None:
     ax.set_xlabel("Text sentiment (VADER)", fontsize=MATRIX_AXIS_LABEL_FS, labelpad=8)
     ax.set_ylabel("Visual emotion (FER)", fontsize=MATRIX_AXIS_LABEL_FS, labelpad=8)
     ax.set_title(
-        f"Cross-modal confusion matrix ($7\\times3$, $n={n_turns}$)",
+        f"Cross-modal $7\\times3$ valence heatmap ($n={n_turns}$)",
         fontsize=MATRIX_TITLE_FS,
         pad=10,
     )
@@ -237,7 +251,8 @@ def _plot_cross_modal_7x7_from_csv(
     xlabel: str,
 ) -> None:
     """Shared 7x7 matrix renderer (pipeline VADER-7, offline HF, lexicon, ...)."""
-    from matplotlib.colors import PowerNorm
+    # Cap the Blues ramp so 100% cells stay light enough for black text.
+    from matplotlib.colors import LinearSegmentedColormap, PowerNorm
     from matplotlib.patches import Rectangle
     from matplotlib.cm import ScalarMappable
 
@@ -255,7 +270,11 @@ def _plot_cross_modal_7x7_from_csv(
     row_pct *= 100
     n_turns = int(counts.sum())
 
-    cmap = plt.colormaps["Blues"]
+    base = plt.colormaps["Blues"]
+    cmap = LinearSegmentedColormap.from_list(
+        "BluesLight",
+        [base(x) for x in np.linspace(0.05, 0.72, 256)],
+    )
     norm = PowerNorm(gamma=0.55, vmin=0, vmax=100)
     sm = ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
@@ -359,7 +378,7 @@ def fig_cross_modal_7x7_hf() -> None:
     _plot_cross_modal_7x7_from_csv(
         ANALYSIS / "cross_modal_7x7_text7_hf.csv",
         "fig_cross_modal_7x7_hf",
-        title="Cross-modal $7\\times7$ matrix (offline DistilRoBERTa)",
+        title="Cross-modal $7\\times7$ heatmap (offline DistilRoBERTa)",
         xlabel="Text emotion (DistilRoBERTa)",
     )
 
@@ -375,34 +394,53 @@ def fig_cross_modal_7x7_lexicon() -> None:
 
 
 def fig_turn_class_composition() -> None:
+    """Four-class breakdown: one horizontal bar per class (readable labels for all strata)."""
     counts, total = _parse_turn_class_counts()
     labels = ["Consistent", "Neutral", "Conflict", "Other"]
     pcts = [c / total * 100 for c in counts]
 
-    fig, ax = plt.subplots(figsize=(5.5, 2.8))
-    left = 0
-    for lab, c, p, col in zip(labels, counts, pcts, C_STACK):
-        ax.barh(0, p, left=left, height=0.45, color=col, edgecolor="white", linewidth=1.2)
-        if p >= 8:
-            ax.text(
-                left + p / 2, 0, f"{lab}\n{c} ({p:.1f}%)",
-                ha="center", va="center", fontsize=9,
-                color="white", fontweight="bold",
-            )
-        left += p
-    ax.set_xlim(0, 100)
-    ax.set_yticks([])
+    fig, ax = plt.subplots(figsize=(7.2, 3.4))
+    y = np.arange(len(labels))
+    bars = ax.barh(
+        y,
+        pcts,
+        color=C_STACK,
+        height=0.58,
+        edgecolor="white",
+        linewidth=1.2,
+    )
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels, fontsize=10)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 78)
     ax.set_xlabel("Share of analysed user turns (%)")
     ax.set_title(f"Turn-level cross-modal classes (n={total})")
-    ax.legend(
-        [plt.Rectangle((0, 0), 1, 1, color=c) for c in C_STACK],
-        labels,
-        loc="upper center",
-        bbox_to_anchor=(0.5, -0.22),
-        ncol=4,
-        frameon=False,
-        fontsize=9,
-    )
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    for rect, c, p, col in zip(bars, counts, pcts, C_STACK):
+        ax.text(
+            min(p + 1.5, 76),
+            rect.get_y() + rect.get_height() / 2,
+            f"{c} ({p:.1f}%)",
+            va="center",
+            ha="left",
+            fontsize=9,
+            fontweight="bold",
+            color=col,
+        )
+        if p >= 6:
+            ax.text(
+                p / 2,
+                rect.get_y() + rect.get_height() / 2,
+                f"{p:.1f}%",
+                va="center",
+                ha="center",
+                fontsize=9,
+                fontweight="bold",
+                color="white",
+            )
+
     fig.tight_layout()
     _save(fig, "fig_turn_class_composition")
 
@@ -413,7 +451,6 @@ def fig_per_session_conflict() -> None:
         raise FileNotFoundError(f"Missing {path}; run cross_modal_consistency.py first.")
 
     df = pd.read_csv(path)
-    # Expected columns: session_id, n_turns, conflict_n, conflict_rate_pct
     if "conflict_rate_pct" not in df.columns and "conflict_rate" in df.columns:
         df["conflict_rate_pct"] = df["conflict_rate"]
     if "conflict_n" not in df.columns:
@@ -426,17 +463,35 @@ def fig_per_session_conflict() -> None:
     if "session_id" not in df.columns:
         df["session_id"] = [f"S{i+1:02d}" for i in range(len(df))]
 
-    df = df.sort_values("conflict_rate_pct", ascending=True).reset_index(drop=True)
+    # Sessions with conflict first (high→low), then 0% sessions grouped on the right
+    # so empty rows are not buried at the bottom of a horizontal chart.
+    df["_has_conflict"] = df["conflict_n"].astype(int) > 0
+    df = df.sort_values(
+        ["_has_conflict", "conflict_rate_pct"],
+        ascending=[False, False],
+    ).reset_index(drop=True)
+    df["label"] = [f"S{i + 1:02d}" for i in range(len(df))]
+
     med = float(df["conflict_rate_pct"].median())
     total_conflicts = int(df["conflict_n"].sum())
     total_turns = int(df["n_turns"].sum())
+    n_zero = int((df["conflict_n"] == 0).sum())
+    n_nonzero = len(df) - n_zero
 
-    # Match Fig. 3--4 typography; use conflict palette for high-rate sessions.
-    fig, ax = plt.subplots(figsize=(9.2, 6.6))
-    y = np.arange(len(df))
-    colors = [C_ACCENT if r >= med else C_PRIMARY for r in df["conflict_rate_pct"]]
-    ax.barh(y, df["conflict_rate_pct"], color=colors, height=0.72, edgecolor="none")
-    ax.axvline(
+    fig, ax = plt.subplots(figsize=(11.5, 6.8))
+    x = np.arange(len(df))
+    rates = df["conflict_rate_pct"].astype(float).values
+    colors = []
+    for _, row in df.iterrows():
+        if int(row["conflict_n"]) == 0:
+            colors.append("#bdc3c7")
+        elif float(row["conflict_rate_pct"]) >= med:
+            colors.append(C_ACCENT)
+        else:
+            colors.append(C_PRIMARY)
+
+    ax.bar(x, rates, width=0.78, color=colors, edgecolor="#5d6d7e", linewidth=0.35)
+    ax.axhline(
         med,
         color=SESSION_MEDIAN_COLOR,
         linestyle="--",
@@ -444,25 +499,375 @@ def fig_per_session_conflict() -> None:
         label=f"Median = {med:.1f}%",
     )
 
-    sid_map = {sid: f"S{i+1:02d}" for i, sid in enumerate(df["session_id"].tolist())}
-    ylabels = []
-    for _, row in df.iterrows():
-        sid = sid_map[str(row["session_id"])]
-        k, n = int(row["conflict_n"]), int(row["n_turns"])
-        ylabels.append(f"{sid}  ({k}/{n})")
-    ax.set_yticks(y, ylabels, fontsize=SESSION_TICK_FS)
-    ax.set_xlabel("Conflict rate in session (%)", fontsize=SESSION_AXIS_LABEL_FS)
+    rate_max = float(rates.max())
+    # Headroom for vertical k/n labels on the tallest bar (S01 ≈ 54.5%).
+    y_top = rate_max + 12.0
+
+    # Visual break between conflict-bearing and all-zero sessions.
+    if n_zero > 0 and n_nonzero > 0:
+        split_x = n_nonzero - 0.5
+        ax.axvline(split_x, color="#7f8c8d", linestyle=":", linewidth=1.0, alpha=0.85)
+        ymax = y_top
+        ax.text(
+            (n_nonzero - 1) / 2.0,
+            ymax * 0.94,
+            f"{n_nonzero} sessions with $\\geq$1 conflict",
+            ha="center",
+            va="top",
+            fontsize=SESSION_TICK_FS,
+            color="#1a5276",
+        )
+        ax.text(
+            n_nonzero + (n_zero - 1) / 2.0,
+            ymax * 0.94,
+            f"{n_zero} sessions at 0%",
+            ha="center",
+            va="top",
+            fontsize=SESSION_TICK_FS,
+            color="#7f8c8d",
+        )
+
+    for xi, row in zip(x, df.itertuples(index=False)):
+        k, n = int(row.conflict_n), int(row.n_turns)
+        if k > 0:
+            y_bar = float(row.conflict_rate_pct)
+            ax.text(
+                xi,
+                y_bar + max(1.0, y_bar * 0.02),
+                f"{k}/{n}",
+                ha="center",
+                va="bottom",
+                fontsize=SESSION_BAR_LABEL_FS,
+                color="#1a5276",
+                rotation=90,
+                clip_on=False,
+            )
+
+    ax.set_xticks(x, df["label"].tolist(), fontsize=SESSION_TICK_FS - 1, rotation=90)
+    ax.set_ylabel("Valence conflict rate (%)", fontsize=SESSION_AXIS_LABEL_FS)
+    ax.set_xlabel(
+        "Session (sorted: conflict rate high to low, then 0%)",
+        fontsize=SESSION_AXIS_LABEL_FS,
+    )
     ax.set_title(
         f"Per-session valence conflict ({len(df)} sessions; "
         f"{total_conflicts}/{total_turns} conflict turns)",
         fontsize=SESSION_TITLE_FS,
     )
-    ax.set_xlim(0, max(55, float(df["conflict_rate_pct"].max()) * 1.08))
-    ax.tick_params(axis="x", labelsize=SESSION_TICK_FS)
+    ax.set_ylim(0, y_top)
+    ax.set_xlim(-0.6, len(df) - 0.4)
+    ax.tick_params(axis="y", labelsize=SESSION_TICK_FS)
+    ax.legend(loc="upper right", fontsize=SESSION_TICK_FS, frameon=False)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.86, bottom=0.24)
+    for ext in ("pdf", "png"):
+        path = OUT / f"fig_per_session_conflict.{ext}"
+        fig.savefig(
+            path,
+            dpi=300 if ext == "png" else None,
+            bbox_inches="tight",
+            pad_inches=0.18,
+            facecolor="white",
+        )
+        print(f"Wrote {path}")
+    plt.close(fig)
 
-    ax.legend(loc="lower right", fontsize=SESSION_TICK_FS, frameon=False)
-    fig.subplots_adjust(left=0.36, right=0.97, top=0.94, bottom=0.10)
-    _save(fig, "fig_per_session_conflict")
+
+def _research_root() -> Path:
+    p = ROOT.resolve()
+    for _ in range(8):
+        if (p / "HF_Data").is_dir():
+            return p
+        if p.parent == p:
+            break
+        p = p.parent
+    return ROOT.parent.parent.parent
+
+
+def _conflict_example_video() -> Path | None:
+    sid = CONFLICT_EXAMPLE_SESSION
+    for base in (
+        _research_root() / "HF_Data/percy_data/normalized_media",
+        _research_root() / "MERCI_Plus/data",
+        ROOT.parent / "HF_Data/percy_data/normalized_media",
+    ):
+        vp = base / sid / "whole_video.mp4"
+        if vp.is_file():
+            return vp
+    return None
+
+
+def _ensure_conflict_example_face(out_path: Path) -> Path:
+    """Crop participant frame at the audited conflict turn (ffmpeg + PIL)."""
+    if out_path.is_file():
+        return out_path
+
+    import subprocess
+
+    from PIL import Image
+
+    video = _conflict_example_video()
+    if video is None:
+        raise FileNotFoundError(
+            f"Missing whole_video.mp4 for session {CONFLICT_EXAMPLE_SESSION}; "
+            "link normalized_media under HF_Data/ or MERCI_Plus/data/."
+        )
+
+    raw = out_path.with_name("_conflict_example_frame_raw.jpg")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-ss",
+            str(CONFLICT_EXAMPLE_T_MID_SEC),
+            "-i",
+            str(video),
+            "-frames:v",
+            "1",
+            "-update",
+            "1",
+            "-q:v",
+            "2",
+            str(raw),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    im = Image.open(raw)
+    w, h = im.size
+    crop = im.crop((int(w * 0.28), int(h * 0.05), int(w * 0.72), int(h * 0.88)))
+    crop.resize((480, 534), Image.Resampling.LANCZOS).save(out_path, quality=92)
+    return out_path
+
+
+def _styled_panel(ax, *, facecolor: str, edgecolor: str = C_PRIMARY, lw: float = 1.5) -> None:
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.set_axis_off()
+    ax.set_facecolor(facecolor)
+    for spine in ax.spines.values():
+        spine.set_visible(True)
+        spine.set_edgecolor(edgecolor)
+        spine.set_linewidth(lw)
+
+
+def _conflict_example_columns(
+    fig: plt.Figure, m: float, gap: float, *, hdr_band: float
+) -> tuple[plt.Axes, plt.Axes, plt.Axes, plt.Axes]:
+    """Four equal-width panels; hdr_band reserves space for figure-level titles."""
+    inner_w = 1.0 - 2 * m
+    col_w = (inner_w - 3 * gap) / 4.0
+    h = 1.0 - 2 * m - hdr_band
+    xs = [m + i * (col_w + gap) for i in range(4)]
+    return tuple(fig.add_axes([x, m, col_w, h]) for x in xs)
+
+
+def _load_conflict_example_turn() -> dict:
+    """Audited turn message_index=12 (session 00_00_00_02_07_00_00)."""
+    import json
+
+    sid = CONFLICT_EXAMPLE_SESSION
+    for base in (
+        _research_root() / "HF_Data/percy_data/normalized_media",
+        _research_root() / "MERCI_Plus/data",
+        ROOT.parent / "HF_Data/percy_data/normalized_media",
+    ):
+        path = base / sid / "chat_history.json"
+        if not path.is_file():
+            continue
+        for msg in json.loads(path.read_text(encoding="utf-8")):
+            if msg.get("role") != "user":
+                continue
+            if int(msg.get("message_index", -1)) == 12:
+                return msg
+    return {
+        "content": (
+            "I'm now very stressful and trying to make the decision "
+            "whether I should study a Ph.D. or not."
+        ),
+        "emotion_visual": "happy",
+        "sentiment": "negative",
+        "sentiment_score": -0.5563,
+        "fer_probs": {"happy": 0.8609, "neutral": 0.1349},
+    }
+
+
+def _conflict_example_headers(
+    fig: plt.Figure,
+    axes: tuple[plt.Axes, ...],
+    titles: tuple[str, ...],
+    *,
+    fs: float,
+    margin: float,
+) -> None:
+    """Titles just below the top red border (figure coordinates, one baseline)."""
+    y = 1.0 - margin - 0.050
+    for ax, title in zip(axes, titles):
+        pos = ax.get_position()
+        fig.text(
+            pos.x0 + pos.width / 2,
+            y,
+            title,
+            ha="center",
+            va="top",
+            fontsize=fs,
+            fontweight="bold",
+            color=C_PRIMARY,
+        )
+
+
+def fig_conflict_example_turn() -> None:
+    """Four-column banner: FER | face frame | transcript | VADER."""
+    import textwrap
+
+    from matplotlib.image import imread
+    from matplotlib.patches import Rectangle
+
+    turn = _load_conflict_example_turn()
+    utterance = str(turn.get("content", "")).strip()
+    face_label = str(turn.get("emotion_visual", "happy")).lower()
+    text_polarity = str(turn.get("sentiment", "negative")).lower()
+    vader_compound = float(turn.get("sentiment_score", -0.5563))
+    fer_probs = turn.get("fer_probs") or {}
+    fer_p = float(fer_probs.get(face_label, 0.0))
+
+    face_path = _ensure_conflict_example_face(OUT / "conflict_example_face.jpg")
+    face_img = imread(face_path)
+
+    m, gap = 0.022, 0.012
+    hdr_band = 0.088
+    hdr_fs = SESSION_AXIS_LABEL_FS  # match Fig. 4 axis label size
+    label_fs = 26
+    param_fs = 12.5
+    quote_fs = 16.0
+
+    fig = plt.figure(figsize=(11.0, 3.05), facecolor="white")
+    outer = fig.add_axes([0, 0, 1, 1])
+    outer.set_axis_off()
+    outer.add_patch(
+        Rectangle(
+            (m, m),
+            1 - 2 * m,
+            1 - 2 * m,
+            fill=True,
+            facecolor="#f8fbfd",
+            edgecolor=C_CONFLICT_EDGE,
+            linewidth=2.4,
+            transform=outer.transAxes,
+            zorder=0,
+            clip_on=False,
+        )
+    )
+
+    axes = _conflict_example_columns(fig, m, gap, hdr_band=hdr_band)
+    ax_fer, ax_img, ax_asr, ax_vad = axes
+    _conflict_example_headers(
+        fig,
+        axes,
+        ("FER", "Video frame", "Transcript (ASR)", "VADER"),
+        fs=hdr_fs,
+        margin=m,
+    )
+
+    quote = textwrap.fill(f'"{utterance}"', width=20)
+
+    # Col 1 — FER result
+    _styled_panel(ax_fer, facecolor=C_PANEL)
+    ax_fer.text(
+        0.5,
+        0.60,
+        face_label.capitalize(),
+        ha="center",
+        va="center",
+        fontsize=label_fs,
+        fontweight="bold",
+        color=C_STACK[0],
+    )
+    ax_fer.text(
+        0.5,
+        0.40,
+        f"p({face_label}) = {fer_p:.2f}",
+        ha="center",
+        va="center",
+        fontsize=param_fs,
+        color=C_PRIMARY,
+    )
+    ax_fer.text(
+        0.5,
+        0.22,
+        "Face valence:\npositive",
+        ha="center",
+        va="center",
+        fontsize=param_fs,
+        color=C_PRIMARY,
+        linespacing=1.25,
+    )
+
+    # Col 2 — video frame (bottom-anchored, small margin above panel floor)
+    _styled_panel(ax_img, facecolor="white", edgecolor=C_PRIMARY)
+    ar = face_img.shape[1] / max(face_img.shape[0], 1)
+    y_lo, y_hi = 0.07, 0.84
+    x_pad = 0.04
+    avail_h = y_hi - y_lo
+    avail_w = 1.0 - 2 * x_pad
+    box_h = avail_h
+    box_w = box_h * ar
+    if box_w > avail_w:
+        box_w = avail_w
+        box_h = box_w / ar
+    xc = 0.5
+    x0, x1 = xc - box_w / 2, xc + box_w / 2
+    y0, y1 = y_lo, y_lo + box_h
+    ax_img.imshow(face_img, extent=[x0, x1, y0, y1], aspect="equal", zorder=2)
+
+    # Col 3 — ASR transcript
+    _styled_panel(ax_asr, facecolor=C_PANEL_ALT)
+    ax_asr.text(
+        0.5,
+        0.48,
+        quote,
+        ha="center",
+        va="center",
+        fontsize=quote_fs,
+        fontweight="medium",
+        color="#111111",
+        linespacing=1.4,
+    )
+
+    # Col 4 — VADER result
+    _styled_panel(ax_vad, facecolor=C_PANEL_ALT)
+    ax_vad.text(
+        0.5,
+        0.58,
+        text_polarity.capitalize(),
+        ha="center",
+        va="center",
+        fontsize=label_fs,
+        fontweight="bold",
+        color=C_ACCENT,
+    )
+    ax_vad.text(
+        0.5,
+        0.36,
+        f"Compound:\n{vader_compound:+.4f}",
+        ha="center",
+        va="center",
+        fontsize=param_fs,
+        color=C_PRIMARY,
+        linespacing=1.25,
+    )
+    ax_vad.text(
+        0.5,
+        0.16,
+        "Text valence:\nnegative",
+        ha="center",
+        va="center",
+        fontsize=param_fs,
+        color=C_PRIMARY,
+        linespacing=1.25,
+    )
+
+    fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    _save(fig, "fig_conflict_example")
 
 
 def fig_response_latency() -> None:
@@ -521,6 +926,7 @@ def main() -> None:
             "ps.fonttype": 42,
         }
     )
+    fig_conflict_example_turn()
     fig_cross_modal_confusion_matrix()
     fig_cross_modal_7x7_hf()
     fig_turn_class_composition()

@@ -1,0 +1,8 @@
+visual\text7_lexicon,happy,neutral,sad,fear,angry,disgust,surprise,row_total
+happy,180,78,18,1,1,0,0,278
+neutral,446,206,58,2,2,0,0,714
+sad,23,7,2,0,0,0,0,32
+fear,1,0,0,0,0,0,0,1
+angry,0,0,0,0,0,0,0,0
+disgust,96,45,12,0,1,0,0,154
+surprise,20,5,1,0,0,0,0,26

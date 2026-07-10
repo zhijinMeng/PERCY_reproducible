@@ -1,0 +1,8 @@
+visual\text7_vader7,happy,neutral,sad,fear,angry,disgust,surprise,row_total
+happy,187,67,24,0,0,0,0,278
+neutral,463,173,78,0,0,0,0,714
+sad,22,7,3,0,0,0,0,32
+fear,1,0,0,0,0,0,0,1
+angry,0,0,0,0,0,0,0,0
+disgust,104,31,19,0,0,0,0,154
+surprise,20,4,2,0,0,0,0,26

@@ -1,0 +1,8 @@
+visual\text7_hf,happy,neutral,sad,fear,angry,disgust,surprise,row_total
+happy,97,130,19,5,3,11,13,278
+neutral,213,380,47,12,9,22,31,714
+sad,9,19,1,0,2,1,0,32
+fear,1,0,0,0,0,0,0,1
+angry,0,0,0,0,0,0,0,0
+disgust,43,87,9,1,3,5,6,154
+surprise,9,16,0,0,0,1,0,26

@@ -4,23 +4,29 @@ Repository for the **MERCI** corpus (Multimodal dataset for Emotionally-aware pe
 
 | Resource | Link |
 |----------|------|
-| Dataset | https://huggingface.co/datasets/zhijin-meng/MERCI |
+| Dataset | https://huggingface.co/datasets/zhijin-meng/MERCI-plus |
 | PERCY (dialogue stack) | https://github.com/zhijinMeng/PERCY |
 | Paper | Extended CBMI 2025 → MTAP special issue |
 
 ## Analysis & benchmarks (`analysis/`)
 
-Audit scripts, human conflict validation (§4.1), and indexing benchmarks A/B/C for the MTAP extended article.
+Audit scripts, human conflict validation (§4.1), indexing benchmarks A/B/C, and cross-corpus transfer (§4.5) for the MTAP extended article.
+Reproducibility specifications match **Appendix A** of the journal manuscript.
 
-See [`analysis/README.md`](analysis/README.md) for setup (`NORMALIZED_MEDIA_ROOT`), dependencies, and reproduction commands.
+See [`analysis/README.md`](analysis/README.md) for setup (`NORMALIZED_MEDIA_ROOT`), hyperparameters, and full reproduction commands.
 
 ```bash
 cd analysis
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 export NORMALIZED_MEDIA_ROOT=/path/to/normalized_media
-python run_downstream_benchmarks.py
+python run_downstream_benchmarks.py          # Benchmarks A & B
+python run_affect_retrieval_benchmark.py     # Benchmark C
+python run_cross_corpus_merci_meld.py        # Table 6 (LogReg)
+python run_cross_corpus_merci_meld_roberta.py
 ```
+
+Figure 2 (dataset sample gallery): [`scripts/figures/build_fig_dataset_samples.sh`](scripts/figures/build_fig_dataset_samples.sh)
 
 ## Robot-side recording bundle (legacy layout)
 

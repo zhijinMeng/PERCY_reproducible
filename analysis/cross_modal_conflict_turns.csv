@@ -1,0 +1,152 @@
+session_id,turn_index,emotion,sentiment,sentiment_score,sentiment_confidence,emotion_visual_confidence,content
+00_00_00_02_07_00_00,0,happy,negative,-0.0772,0.0772,,"Uh, sorry, what cuisine are you referring to?"
+00_00_00_02_07_00_00,12,happy,negative,-0.5563,0.5563,,I'm now very stressful and trying to make the decision whether I should study a Ph.D. or not.
+00_00_00_02_07_00_00,34,happy,negative,-0.0772,0.0772,,"Sorry, ask the question again."
+00_00_00_02_07_00_00,46,happy,negative,-0.296,0.296,,"No, just ask me the next question."
+00_00_00_02_07_00_00,50,happy,negative,-0.296,0.296,,Maybe it's a random. I have no clue
+00_00_00_04_07_00_01,3,disgust,positive,0.8126,0.8126,,hmm well it would be the I guess I don't aesthetics or the looks of sort of mecha or those exoskeletons those sort of hu
+00_00_00_04_07_00_01,9,disgust,positive,0.7956,0.7956,,mmm well there's a quite a interesting music i found called let her go and then i guess Aerosmith is another sort of ban
+00_00_00_04_07_00_01,15,disgust,positive,0.4364,0.4364,,"Well, I guess the old Call of Duty Modern Warfare stories were quite, you know, memorable. I found them to be quite an i"
+00_00_00_04_07_00_01,31,disgust,positive,0.5407,0.5407,,"Uh, I guess maybe over the hard days I plan to go back to China, but I wouldn't call that traveling It's more like going"
+00_00_00_04_07_00_02,12,sad,positive,0.6597,0.6597,,"Yes, it can help me a lot."
+00_00_00_04_07_00_02,14,sad,positive,0.0772,0.0772,,"No, for this moment, I cannot think of any asset."
+00_00_00_04_07_00_02,20,sad,positive,0.6124,0.6124,,"Like I said, I like watching action movies."
+00_00_00_04_07_00_02,26,fear,positive,0.7269,0.7269,,"I enjoy watching action movies because it can relax me. Also, the fantasy."
+00_00_00_04_07_00_02,50,sad,positive,0.8591,0.8591,,"Yeah, I think the best memory in the university is that I made a lot of friends."
+00_00_00_04_08_00_00,5,disgust,positive,0.1845,0.1845,0.6,"It's about a kid who is an orphan, and he basically wanted to become the leader of the nation. And he actually did it. P"
+00_00_00_04_08_00_00,11,disgust,positive,0.8338,0.8338,0.6,the stories of the characters in that film. I mean they were they were actually like family oriented you know one of the
+00_00_00_04_08_00_00,15,disgust,positive,0.8955,0.8955,0.6,"Ghana, right, like, he can basically tell his, like, you know, like, he can basically rap well. He can tell the stories "
+00_00_00_04_08_00_00,19,disgust,positive,0.7976,0.7976,0.6,is chess you know it's a it's a fun game it's about making the right decision you know you have to think through all the
+00_00_00_04_08_00_00,25,disgust,positive,0.9186,0.9186,0.6,"My favorite dish for Italian is pizza and my favorite for American is burgers. I mean those are like typical, average ch"
+00_00_00_04_08_00_00,37,disgust,positive,0.9001,0.9001,0.6,responsibilities you know my responsibility as a son to do my school work well. Responsibility as a son to you know make
+00_00_00_05_03_00_00,33,happy,negative,-0.128,0.128,,"Oh yeah, the biggest problem I have is to complete my academic research project."
+00_00_00_05_07_00_00,4,disgust,positive,0.8126,0.8126,,"Yes, what I have learned is good for my job and it can make me work easier in my job."
+00_00_00_05_07_00_00,10,happy,negative,-0.3865,0.3865,,I will spend so much time to handle this and sometimes the player would not be very good.
+00_00_00_05_07_00_00,20,disgust,positive,0.4215,0.4215,,"I have finished many projects in the study, so I think it can make easier to work and my life."
+00_00_00_05_07_00_00,30,disgust,positive,0.7184,0.7184,,"Yes, when I am free, I will do those activities to..."
+00_00_00_05_07_00_00,34,disgust,positive,0.1134,0.1134,,"No, I think that can't help me to handle the next day's challenge. It just can't release me for the temporary happiness."
+00_00_00_05_07_00_00,36,disgust,positive,0.7717,0.7717,,I think the actor's interesting behavior will make me happy and some hands-on behavior can also comfort me and it can re
+00_00_00_05_07_00_00,42,disgust,positive,0.7178,0.7178,,"I think the rhythm and the beat, I really enjoy them when I listen to the music, because I like them, I think."
+00_00_00_05_07_00_00,44,disgust,positive,0.7902,0.7902,,"Uh, no, I will not listen to music the entire day. When I was working, I will listen to some relaxed music. And when I w"
+00_00_00_05_07_00_00,46,disgust,positive,0.4417,0.4417,,"I think when I was walking, I will listen to some relaxing music, it can help me to calm down and feel cool to think abo"
+00_00_00_05_07_00_00,50,disgust,positive,0.9378,0.9378,,"Yes, I think all of the games can improve the relationship between me and my friends Because when we play the games, we "
+00_00_00_05_07_00_00,52,disgust,positive,0.8652,0.8652,,"Yes, I have played the game for a long time. I meet my friends through playing the game sometimes. They all like, they a"
+00_00_00_05_07_00_00,56,disgust,positive,0.7184,0.7184,,Please those who can make me happy.
+00_00_00_05_07_00_00,58,disgust,positive,0.2263,0.2263,,the people will like their own their born country's creatures so if they go the boat they will miss their food when they
+00_00_00_05_07_00_01,22,sad,positive,0.2263,0.2263,,"Well, maybe some sci-fi books like Three Body Problems."
+00_00_00_05_07_00_02,23,disgust,positive,0.9939,0.9939,,"I say like intellectual, I mean like you are trying with very small approaches and maybe you could not get enough result"
+00_00_00_05_07_00_02,35,disgust,positive,0.975,0.975,,"It seems like expressing your personality traits in words may not be something you're comfortable with, and that's absol"
+00_00_00_05_08_00_00,5,disgust,positive,0.7906,0.7906,0.6,"I think this game, what's the difference between the before game is that you can have a feeling of gambling, yes, it's a"
+00_00_00_05_08_00_00,33,disgust,positive,0.5106,0.5106,0.6,"To be honest, I think..."
+00_00_00_05_08_00_00,53,disgust,positive,0.7506,0.7506,0.6,"Sure, when you have a physical map, have a physical something object, that might be not very working when you have a dig"
+00_00_00_05_08_00_00,55,disgust,positive,0.25,0.25,0.6,"Sorry, pardon"
+00_00_02_02_03_00_00,28,happy,negative,-0.144,0.144,,"I don't really, I don't really have one, sorry."
+00_00_02_02_08_00_00,5,disgust,positive,0.7178,0.7178,0.6,"My favourite flavour of yoghurt would probably be, um, I liked when they had the honey yoghurt, that was really good."
+00_00_02_02_08_00_00,9,disgust,positive,0.7003,0.7003,0.6,"are probably, you know, how it doesn't fall off, you know, it gets better and better."
+00_00_02_02_08_00_00,13,disgust,positive,0.5719,0.5719,0.6,"Yeah, I like Kanye. He's my favourite artist."
+00_00_02_02_08_00_00,17,disgust,positive,0.4588,0.4588,0.6,"Um, my favorite song would probably be I wonder"
+00_00_02_02_08_00_00,27,disgust,positive,0.7845,0.7845,0.6,"spaghetti carbonara, and I think fettuccine is definitely the best type of pasta."
+00_00_02_02_08_00_00,29,disgust,positive,0.8945,0.8945,0.6,"Yeah, I love when it's with a creamy dish, but I think it's, you know, it's nice how it's got more thickness, so you can"
+00_00_02_02_08_00_00,31,disgust,positive,0.8122,0.8122,0.6,"It felt great, I put a lot of effort into the HSC so it was very satisfying once I walked on the stage and got my HSC."
+00_00_02_02_08_00_00,33,disgust,positive,0.3612,0.3612,0.6,Thank you.
+00_00_02_02_08_00_00,35,disgust,positive,0.3612,0.3612,0.6,I agree.
+00_00_02_02_08_00_00,37,disgust,positive,0.0772,0.0772,0.6,"Um, I normally, you know, cope with challenges by..."
+00_00_02_02_08_00_00,39,disgust,positive,0.5859,0.5859,0.6,"I would say just like making sure you get a lot of sleep, you know"
+00_00_02_02_08_00_00,45,disgust,positive,0.296,0.296,0.6,"Yeah, he can."
+00_00_02_02_08_00_00,61,disgust,positive,0.6486,0.6486,0.6,"On sunny days, I said earlier, I like to go to the beach."
+00_00_02_04_07_00_00,8,disgust,positive,0.5106,0.5106,,"Um, just reflecting on conversations I've had and why I said things, and how I felt when I said things, what I was tryin"
+00_00_02_04_07_00_00,26,happy,negative,-0.0772,0.0772,,"Uh, we'll trade, sorry."
+00_01_00_04_03_00_00,5,disgust,positive,0.6124,0.6124,,"I prefer puzzle games because it makes me think and focus on the game itself, and I enjoy the achievement when I solve a"
+00_01_00_04_03_00_00,7,disgust,positive,0.8176,0.8176,,"I would choose ramen. That's what I like. It's full of carbs, it's warm, and it's great meal."
+00_01_00_04_03_00_00,21,disgust,positive,0.34,0.34,,"Yes, I agree. It has been two months, so I think I have almost settled down from what? From the trauma, and it's just th"
+00_01_00_04_03_00_00,23,disgust,positive,0.7974,0.7974,,"Um, during this time, I'm very lucky that I got a lot of friends, not a lot of friends, but like quite a number of those"
+00_01_00_04_03_00_00,25,disgust,positive,0.5819,0.5819,,"So I, so the story actually comes back from after I break out of my act. I started putting my time on myself and one of "
+00_01_00_04_03_00_00,31,disgust,positive,0.9844,0.9844,,It's important to take your progress at your own pace and prioritize your well-being as you navigate your return to comp
+00_01_00_04_03_00_00,35,disgust,positive,0.1901,0.1901,,"So in the weekly planning, I will always schedule, like outside of work time, I will always schedule one or two hours be"
+00_01_00_04_03_00_00,43,disgust,positive,0.6652,0.6652,,"I don't think any of these three activities are complementary to each other as described, but I will say these activitie"
+00_01_00_04_03_00_00,47,disgust,positive,0.9839,0.9839,,"Finding a balance between rest, physical activity through badminton, and leisure activities like music is indeed a thoug"
+00_01_00_04_03_00_00,49,disgust,positive,0.5267,0.5267,,"So, first thing, I do not watch TV shows that much, but if you want me to choose, if you want me to choose a type of TV "
+00_01_00_04_03_00_00,55,disgust,positive,0.9605,0.9605,,"So when I mention K-pop, it's more like I love the active, the active, vibrant, the temp, the tempo, and tempo, it makes"
+00_01_00_04_03_00_00,57,disgust,positive,0.9373,0.9373,,"So I normally would not listen to these two music at the same time. So it's more like if I'm happy, if I'm hanging out, "
+00_01_00_08_08_00_00,3,disgust,positive,0.5423,0.5423,0.6,Peace?
+00_01_00_08_08_00_00,7,happy,negative,-0.357,0.357,0.6,I don't have much interest in watching films.
+00_01_00_08_08_00_00,11,disgust,positive,0.6705,0.6705,0.6,"Mmm, I think you can you relax me because when I'm playing playing at a game I do not need to focusing on other stuff"
+00_01_00_08_08_00_00,15,disgust,positive,0.6808,0.6808,0.6,I prefer both. I play piano myself and I also enjoy listening to others performing piano.
+00_01_00_08_08_00_00,17,disgust,positive,0.34,0.34,0.6,What do you mean by PSA play?
+00_01_00_08_08_00_00,21,happy,negative,-0.3421,0.3421,0.6,"Sorry, I don't like this shirt."
+00_01_00_08_08_00_00,27,disgust,positive,0.5719,0.5719,0.6,the taste is delicious.
+00_01_00_08_08_00_00,33,disgust,positive,0.2732,0.2732,0.6,"Oh, the experience that I learned during the problem solving makes me excited."
+00_01_00_08_08_00_00,37,disgust,positive,0.34,0.34,0.6,"Oh, I just play table tennis, as I mentioned previously."
+00_01_00_08_08_00_00,39,disgust,positive,0.2023,0.2023,0.6,"When I'm playing, I'm not using my brain too much. I'm just using my body, and when I'm studying, I use my brain mostly."
+00_01_00_08_08_00_00,41,disgust,positive,0.4019,0.4019,0.6,Yes.
+00_01_00_08_08_00_00,43,disgust,positive,0.2023,0.2023,0.6,maybe playing badminton
+00_01_00_08_08_00_00,45,disgust,positive,0.3993,0.3993,0.6,"Well, I'm not good at it, so I found the initial learning experience to be quite interesting."
+00_01_00_08_08_00_00,47,disgust,positive,0.128,0.128,0.6,"Oh, if I know that I can solve the problem, then that will make me excited."
+00_01_00_08_08_00_00,51,disgust,positive,0.4588,0.4588,0.6,"Or in this case, I just need to relax and refresh my mind, and I may have a different angle view to the matter."
+00_01_00_08_08_00_00,53,disgust,positive,0.4019,0.4019,0.6,Yes.
+00_01_00_08_08_00_00,59,disgust,positive,0.4019,0.4019,0.6,Yes.
+00_01_00_08_08_00_00,65,disgust,positive,0.4019,0.4019,0.6,Yes.
+00_01_01_08_08_00_00,49,happy,negative,-0.6249,0.6249,0.6,I think it's a serious question and a serious thing because someone betrays you.
+00_02_00_05_08_00_00,3,disgust,positive,0.5267,0.5267,0.6,yeah I think yeah I I I swam I swim across a famous river in my hometown when I was in
+00_02_00_05_08_00_00,5,disgust,positive,0.8437,0.8437,0.6,"I think I really prepared a lot of time to be passed by a participant. And so after that activity, I think I improved my"
+00_02_00_05_08_00_00,7,disgust,positive,0.3612,0.3612,0.6,"I quote, like, Batman. Do you know Batman?"
+00_02_00_05_08_00_00,9,disgust,positive,0.9507,0.9507,0.6,I love the spirit of the Batman. I was hoping to become a policeman when I was a child. Actually it's in middle school o
+00_02_00_05_08_00_00,15,disgust,positive,0.9285,0.9285,0.6,"Yeah, I really love the, it's like the western U.S. style music. I love the..."
+00_02_00_05_08_00_00,25,disgust,positive,0.9505,0.9505,0.6,"I can't really eat a food that is spicy. I can't eat spicy food. But I still love pork or rice or chicken, something lik"
+00_02_00_05_08_00_00,33,disgust,positive,0.3818,0.3818,0.6,"were lots of research project opportunities in the USA. Specifically, I was in the university"
+00_02_00_05_08_00_00,43,disgust,positive,0.4588,0.4588,0.6,"Hmm, I want to keep healthy and keep"
+00_02_00_05_08_00_00,45,disgust,positive,0.4767,0.4767,0.6,"Not really. Maybe talk with people, talk with friends, or listen to some music."
+00_02_00_05_08_00_00,47,disgust,positive,0.34,0.34,0.6,"to your music, played by."
+00_02_00_05_08_00_00,55,disgust,positive,0.2534,0.2534,0.6,"of all, I was born positive, so I hardly get upset, and things always have coins and points."
+00_02_00_05_08_00_00,63,disgust,positive,0.5719,0.5719,0.6,"Yeah, like, go hiking, climb the mountain."
+00_02_05_04_07_00_00,41,happy,negative,-0.4491,0.4491,0.6,"Actually, this is one of my biggest difficulty and stress point since I have a lot of responsibility. It's kind of hard "
+00_02_05_04_07_00_00,43,happy,negative,-0.6223,0.6223,0.6,"I wish you can help me with that, but basically what I'm doing is doing the most critical closer little line first, then"
+00_02_05_04_07_00_00,59,happy,negative,-0.9208,0.9208,0.6,"Actually, it makes them look to everything in dark, sunglass-eyed. So they will be so negative, always look for the bad "
+00_02_05_05_07_00_01,0,sad,positive,0.296,0.296,,"Yeah, the most podcast I have listened to is called Finian, because it gives me information to general topics."
+00_02_05_05_07_00_01,2,sad,positive,0.6124,0.6124,,It's something like it's not in my field because I work in computer science and when I discover other areas like our fin
+00_02_05_05_07_00_01,4,sad,positive,0.8793,0.8793,,It could be that's one way to engage those knowledge in my field But my main reason is to gain knowledge for myself to m
+00_02_05_05_07_00_01,18,sad,positive,0.8588,0.8588,,"Recently, I got a paper acceptance in Conference, which makes me more relieved to look to my PhD journey as a positive e"
+00_02_05_05_07_00_01,20,sad,positive,0.8746,0.8746,,"With this achievement, I just went out with my family to have a dinner with them and go back to the most lovable place f"
+00_02_05_05_07_00_01,22,sad,positive,0.3182,0.3182,,"Can you repeat the questions again, please?"
+00_02_05_05_07_00_01,26,sad,positive,0.3612,0.3612,,when I have such as a cold like a.
+00_02_05_05_07_00_01,28,sad,positive,0.296,0.296,,I just take a time out to relax and rethink about my divorce conflict and how to isolate all those conflicts in a better
+00_02_05_05_07_00_01,34,sad,positive,0.5574,0.5574,,Adding more more techniques and try to create my own my own way to develop Presentation techniques that's why I'm trying
+00_02_05_05_07_00_01,38,sad,positive,0.7096,0.7096,,"I found them both are good tools to me because they are completing each other so I will continue to not only use them, I"
+00_02_05_05_07_00_01,44,sad,positive,0.5574,0.5574,,That's why I use my analytic skill to analyze the person in front of me and make it in the circle of my connection or no
+00_02_05_05_07_00_01,46,happy,negative,-0.2924,0.2924,,Do you repeat the questions again without the clear way?
+00_02_05_05_07_00_01,48,sad,positive,0.7717,0.7717,,"As a human being, we are working hard to accomplish goals in our life, and as a family, part of me and I am part of the "
+00_02_05_05_07_00_01,54,sad,positive,0.8366,0.8366,,"So for the movies I watch, it's more interesting to watch different things, so I found it more like interesting and enjo"
+00_02_05_05_07_00_02,10,disgust,positive,0.7717,0.7717,,"to hear, it sounds like you have a well-rounded approach to personal growth, combining professional development with per"
+00_02_05_05_07_00_02,24,disgust,positive,0.944,0.944,,"Actually, it helps a lot. Sometimes I feel like I don't want to go out from home, so I just lay down on my sofa, open Ne"
+00_02_05_05_07_00_02,32,happy,negative,-0.0772,0.0772,,"Yeah, of course. We have, let's say, Fast and Furious as an example. Also, there is another movie called Red One with, w"
+00_02_05_05_07_00_02,48,disgust,positive,0.5719,0.5719,,"Yeah, of course. I could give you an example from each one. Let's say for American I like the pancake"
+00_02_05_05_07_00_02,50,disgust,positive,0.5719,0.5719,,"Yeah, of course plenty of option for Middle Eastern because I'm from there. Of course, there are like katsa, kebab, chee"
+00_02_05_05_07_00_02,52,disgust,positive,0.5563,0.5563,,"Actually, I really enjoyed any one of these dishes."
+01_00_00_02_07_00_00,17,disgust,positive,0.1406,0.1406,,"Um, I tried to create a new feature, but I don't have it yet, so I'll probably have to wait for a while longer."
+01_00_00_04_02_00_00,23,sad,positive,0.296,0.296,,"Okay, what do you want to ask? I didn't get your point."
+01_00_00_04_02_00_00,25,sad,positive,0.25,0.25,,"Um, well, there's like so many cultures, um, maybe related to our culture shocks."
+01_00_00_04_02_00_00,37,disgust,positive,0.743,0.743,,"Well, you know, any class music from Europe, that's what I love."
+01_00_00_04_02_00_00,49,sad,positive,0.296,0.296,,"Yeah, especially catering, morning tea, yum cha."
+01_00_00_04_03_00_00,1,happy,negative,-0.296,0.296,,"No, I just try these two kinds of food separately."
+01_00_00_04_03_00_00,13,disgust,positive,0.4019,0.4019,,"Yes, so the two roles, I think one role is I need to finish my master's degree and the other one is at the same time I h"
+01_00_00_04_03_00_00,33,happy,negative,-0.0772,0.0772,,"Hey, sorry, can you speak that again?"
+01_00_00_04_03_00_00,35,happy,negative,-0.0772,0.0772,,"Um, sorry, I can't really understand your question of this question"
+01_00_00_04_03_00_00,41,disgust,positive,0.8934,0.8934,,"Yes, I think especially the sports, it gives me the strength, it keeps me healthy and I can make lots of friends from th"
+01_00_00_04_03_00_00,57,disgust,positive,0.9015,0.9015,,"Um, so, um, it's hard to say, but, um, when I want to be relaxing and I will choose a video game, but when I, maybe I wa"
+01_00_00_04_07_00_00,3,disgust,positive,0.6124,0.6124,,"Uh, you mean, uh, you want me share the travel, uh, the city I traveled, uh, like before?"
+01_00_00_04_07_00_00,25,disgust,positive,0.25,0.25,,"Sorry, can you explain your question, please?"
+01_00_00_04_07_00_00,27,happy,negative,-0.228,0.228,,"Yes, I don't like the injustice because I think the justice keeps the balance of our society. Because if on fire, people"
+01_00_00_04_07_00_00,33,sad,positive,0.6997,0.6997,,The most favorite cuisine is Chinese cuisine and I like it.
+01_00_00_04_07_00_00,59,disgust,positive,0.5719,0.5719,,I think maybe the hotpot. You just need to put the food on the pot and boiling it and it tastes spicy and delicious.
+01_00_00_04_07_00_01,13,disgust,positive,0.6666,0.6666,,"I'm interested in studying and exploring learning techniques, especially for the natural language processing technique."
+01_00_00_04_07_00_01,19,disgust,positive,0.8553,0.8553,,I think it's more easier for me to make friends and then I have lots of people to talk with and then I can be inspired b
+01_01_00_05_03_00_00,39,happy,negative,-0.0772,0.0772,,"Sorry, I couldn't get the quotient. Can I repeat again?"
+01_01_00_08_08_01_00,21,disgust,positive,0.6705,0.6705,0.6,"I mean, I used to play it a lot with my friends. I think that's what, it's just nostalgic at this point."
+01_01_02_05_08_00_00,5,happy,negative,-0.2498,0.2498,0.6,"As we moved recently, I haven't found a perfect park yet close to our home, but I'm still looking for it."
+01_01_02_05_08_00_00,39,disgust,positive,0.7964,0.7964,0.6,"Oh, I just take time off, watch some shows, go to sports, meet friends, and just like, take distance, like, a bit of dis"
+01_01_02_05_08_00_00,41,disgust,positive,0.4404,0.4404,0.6,Better.
+01_01_02_05_08_00_00,45,disgust,positive,0.8481,0.8481,0.6,"I like a lot of medical research and specifically I like the technical side, so I found my gap that I love in medical im"
+01_01_02_05_08_00_00,47,disgust,positive,0.9152,0.9152,0.6,"It's so hands-on, it's so easy to motivate myself, as their use is so clearly there that I potentially could help."
+01_01_02_05_08_00_00,57,disgust,positive,0.9568,0.9568,0.6,"Often quite good when I try to talk to people and ask what's up, but not everyone is open to do that directly or ready t"
+03_00_00_02_08_00_00,3,happy,negative,-0.0772,0.0772,0.6,"Sorry, did you sleep?"
+03_00_00_02_08_00_00,19,disgust,positive,0.261,0.261,0.6,I don't really play many games. Right now it's like I'm playing.

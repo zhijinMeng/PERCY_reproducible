@@ -1,5 +1,5 @@
 {
-  "n_turns": 911,
+  "n_turns": 1205,
   "n_queries": 12,
   "query_spec_file": "benchmark_c_queries.json",
   "metadata_exact_match": {
@@ -13,30 +13,30 @@
   "query_summary_by_kind": {
     "conflict": {
       "n_queries": 4,
-      "text_recall@10": 0.015202126743331363,
-      "text_ndcg@10": 0.3140045064168915,
-      "metadata_recall@10": 0.1658961169124285,
+      "text_recall@10": 0.012414422162097993,
+      "text_ndcg@10": 0.31367459389552615,
+      "metadata_recall@10": 0.146829738738743,
       "metadata_ndcg@10": 1.0
     },
     "consistent": {
       "n_queries": 6,
-      "text_recall@10": 0.006635236598568186,
-      "text_ndcg@10": 0.09117225205288748,
-      "metadata_recall@10": 0.2899314649903964,
+      "text_recall@10": 0.003471244957313069,
+      "text_ndcg@10": 0.05221413615029016,
+      "metadata_recall@10": 0.2712731025424524,
       "metadata_ndcg@10": 0.6666666666666666
     },
     "neutral": {
       "n_queries": 1,
-      "text_recall@10": 0.010169491525423728,
-      "text_ndcg@10": 0.617585285916322,
-      "metadata_recall@10": 0.01694915254237288,
+      "text_recall@10": 0.009720534629404616,
+      "text_ndcg@10": 0.8630152897016883,
+      "metadata_recall@10": 0.012150668286755772,
       "metadata_ndcg@10": 1.0
     },
     "other": {
       "n_queries": 1,
       "text_recall@10": 0.0,
       "text_ndcg@10": 0.0,
-      "metadata_recall@10": 0.8333333333333334,
+      "metadata_recall@10": 0.45454545454545453,
       "metadata_ndcg@10": 1.0
     }
   }

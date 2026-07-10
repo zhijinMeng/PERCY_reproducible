@@ -1,8 +1,9 @@
-# MERCI analysis & benchmarks
+# MERCI+ analysis & benchmarks
 
-Scripts to reproduce the MTAP extended MERCI paper: cross-modal audit, human conflict validation (§4.1), and indexing benchmarks A/B/C.
+Scripts to reproduce the MTAP extended MERCI+ paper: cross-modal audit, human conflict validation (§4.1), indexing Benchmarks A/B/C, and cross-corpus transfer (§4.5).
 
-- **Dataset:** [Hugging Face `zhijin-meng/MERCI`](https://huggingface.co/datasets/zhijin-meng/MERCI)
+- **Dataset:** [Hugging Face `zhijin-meng/MERCI-plus`](https://huggingface.co/datasets/zhijin-meng/MERCI-plus)
+- **Paper appendix:** reproducibility specifications (Section A) match these scripts
 - **Collection stack:** [PERCY](https://github.com/zhijinMeng/PERCY)
 
 ## Data layout
@@ -10,57 +11,92 @@ Scripts to reproduce the MTAP extended MERCI paper: cross-modal audit, human con
 Point scripts at normalized session folders (`chat_history.json` per session):
 
 ```bash
-export NORMALIZED_MEDIA_ROOT=/path/to/normalized_media   # 30-session audit snapshot
-# optional legacy layout:
-export PERCY_DATA_ROOT=/path/to/percy_data
+export NORMALIZED_MEDIA_ROOT=/path/to/normalized_media
 ```
 
-Or symlink:
+The audit session list is fixed in `cross_modal_per_session.csv` (41 sessions, 1,205 user turns). Regenerate with:
 
 ```bash
-mkdir -p ../data
-ln -s /path/to/HF_export/normalized_media ../data/normalized_media
+python cross_modal_consistency.py
+python export_cross_modal_per_session.py
 ```
 
-`cross_modal_per_session.csv` locks the 30 sessions used in the paper tables.
+Turn-level exports on Hugging Face (`data/turns_user.jsonl`) mirror the same fields documented in Appendix A.2 of the paper.
 
 ## Setup
 
 ```bash
+cd analysis
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cd analysis   # if you cloned repo root; scripts assume cwd = analysis/
 ```
 
-## Reproduce paper benchmarks
+For Benchmark B multimodal (`Text + raw FER probs`), also run offline FER replay (Docker + PERCY emotion model):
 
 ```bash
-# Offline FER 7-dim probabilities (Docker; see run_offline_fer_in_docker.sh)
-./run_offline_fer_in_docker.sh
-
-# Benchmarks A & B (+ bootstrap CIs)
-python run_downstream_benchmarks.py
-
-# Benchmark C (12 queries in benchmark_c_queries.json)
-python run_affect_retrieval_benchmark.py
-
-# §4.1 human vs deployment rule (annotation CSV)
-python run_human_conflict_validation.py colleague_ar.csv
-
-# Cross-corpus transfer (download MELD/IEMOCAP CSVs into analysis/ first)
-python run_cross_corpus_merci_meld.py --meld-train meld_train_sent_emo.csv ...
-python run_cross_corpus_merci_meld_roberta.py   # slower; needs GPU optional
+./run_offline_fer_in_docker.sh   # writes offline_fer_probs.csv
 ```
+
+## Reproduce main-text tables
+
+| Paper table | Command | Output |
+|-------------|---------|--------|
+| Table 3 (Benchmark A) | `python run_downstream_benchmarks.py` | `benchmark_a_conflict_prediction.csv` |
+| Table 4 (Benchmark B) | same | `benchmark_b_conflict_aware_emotion.csv` |
+| Table 5 (Benchmark C) | `python run_affect_retrieval_benchmark.py` | `benchmark_c_affect_retrieval.csv` |
+| Table 6 (cross-corpus) | see below | `benchmark_cross_corpus_merci_meld*.csv` |
+
+### Benchmarks A & B
+
+```bash
+python run_downstream_benchmarks.py
+```
+
+Protocol (see paper Appendix A.4):
+- 5-fold `GroupKFold` on `session_id`
+- TF-IDF: `max_features=20000`, `ngram_range=(1,2)`, `min_df=1`
+- LogReg: `max_iter=3000`, `class_weight=balanced`, seeds 11/22/33 (majority vote)
+- Bootstrap CIs: B=2000, session-level resampling, percentile 2.5/97.5
+
+### Benchmark C
+
+```bash
+python run_affect_retrieval_benchmark.py
+```
+
+Query definitions: `benchmark_c_queries.json` (12 queries; full list in paper Table A).
+
+### Cross-corpus transfer (§4.5)
+
+Download MELD `train/dev/test_sent_emo.csv` and IEMOCAP Session1–5 into `analysis/` (not redistributed):
+
+```bash
+python run_cross_corpus_merci_meld.py \
+  --meld-train meld_train_sent_emo.csv \
+  --meld-dev meld_dev_sent_emo.csv \
+  --meld-test meld_test_sent_emo.csv \
+  --iemocap-root iemocap_hf/data
+
+python run_cross_corpus_merci_meld_roberta.py   # frozen distilroberta-base, max_len=128
+```
+
+### Human conflict validation (§4.1)
+
+```bash
+python run_human_conflict_validation.py colleague_ar.csv
+```
+
+Annotation guide: `HUMAN_CONFLICT_ANNOTATION_GUIDE.md`
 
 ## Audit / figures (optional)
 
 ```bash
-python export_cross_modal_per_session.py
-python cross_modal_consistency.py
-python plot_merci_figures.py
+python plot_merci_figures.py          # main-text figures
 ```
 
-## Outputs
+Figure 2 (dataset samples gallery): `../Figures/build_fig_dataset_samples.sh`
 
-Precomputed CSV/JSON in this folder match the paper tables where noted (`benchmark_*.csv`, `human_conflict_validation_*.json`). Re-run scripts after changing data or protocol.
+## Hyperparameters summary
+
+All defaults are hard-coded in the runner scripts; the paper Appendix A.3 lists the exact values. Do not change them when reproducing reported numbers.

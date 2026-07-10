@@ -61,7 +61,7 @@ def main() -> None:
             r.update(label_turn(msg, channels))
             rows.append(r)
 
-    lines = ["7x7 cross-modal summary (30 sessions)", "=" * 50, f"Turns: {len(rows)}", ""]
+    lines = ["7x7 cross-modal summary (41 sessions)", "=" * 50, f"Turns: {len(rows)}", ""]
     for txt_col in [k for k in (rows[0].keys() if rows else []) if k.startswith("text7_")]:
         mat = Counter()
         for r in rows:

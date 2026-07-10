@@ -1,0 +1,24 @@
+Cross-modal consistency analysis summary
+==================================================
+
+Sessions scanned : 41
+User turns kept  : 1205
+User turns dropped (unknown emotion or sentiment): 1
+
+Turn-class counts (n and %):
+  consistent                              :   209  (17.3%)
+  neutral (>=1 channel neutral)           :   823  (68.3%)
+  conflict (valence mismatch)             :   151  (12.5%)
+  other (e.g. surprise)                   :    22  (1.8%)
+
+7x3 visual-emotion x text-sentiment confusion (n):
+  emotion      positive    neutral   negative      total
+  happy             187         67         24        278
+  neutral           463        173         78        714
+  sad                22          7          3         32
+  fear                1          0          0          1
+  angry               0          0          0          0
+  disgust           104         31         19        154
+  surprise           20          4          2         26
+
+Per-session conflict rate (%): median=5.9, IQR=[0.0, 17.2], min=0.0, max=54.5

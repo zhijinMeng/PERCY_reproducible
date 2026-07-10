@@ -7,6 +7,9 @@ from pathlib import Path
 EMOTIONS = frozenset({"happy", "neutral", "sad", "fear", "angry", "disgust", "surprise"})
 SENTIMENTS = frozenset({"positive", "neutral", "negative"})
 
+# Offline FER export order (PERCY mobilenet); matches Benchmark B feature columns.
+FER_PROB_LABELS = ("angry", "disgust", "fear", "happy", "neutral", "sad", "surprise")
+
 CHAT_CANDIDATES = (
     "chat_history_asr_aligned_large_v3.json",
     "chat_history_aligned.json",
@@ -81,6 +84,38 @@ def normalize_message(msg: dict) -> dict:
 
 def normalize_messages(messages: list[dict]) -> list[dict]:
     return [normalize_message(m) for m in messages]
+
+
+def fer_probs_from_message(msg: dict) -> dict[str, float] | None:
+    """Read 7-dim FER probs from chat_history user turn (fer_probs dict or fer_p_* keys)."""
+    raw = msg.get("fer_probs")
+    if isinstance(raw, dict) and raw:
+        out: dict[str, float] = {}
+        for label in FER_PROB_LABELS:
+            if label in raw:
+                try:
+                    out[label] = float(raw[label])
+                except (TypeError, ValueError):
+                    pass
+        if out:
+            s = sum(out.values())
+            if s > 0:
+                return {k: v / s for k, v in out.items()}
+            return out
+    flat: dict[str, float] = {}
+    for label in FER_PROB_LABELS:
+        key = f"fer_p_{label}"
+        if msg.get(key) is not None:
+            try:
+                flat[label] = float(msg[key])
+            except (TypeError, ValueError):
+                pass
+    if flat:
+        s = sum(flat.values())
+        if s > 0:
+            return {k: v / s for k, v in flat.items()}
+        return flat
+    return None
 
 
 def pick_chat_file(session_dir: Path) -> Path | None:

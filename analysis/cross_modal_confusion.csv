@@ -1,0 +1,8 @@
+emotion,n_total,positive_n,neutral_n,negative_n,positive_pct,neutral_pct,negative_pct
+happy,278,187,67,24,67.3,24.1,8.6
+neutral,714,463,173,78,64.8,24.2,10.9
+sad,32,22,7,3,68.8,21.9,9.4
+fear,1,1,0,0,100.0,0.0,0.0
+angry,0,0,0,0,0.0,0.0,0.0
+disgust,154,104,31,19,67.5,20.1,12.3
+surprise,26,20,4,2,76.9,15.4,7.7

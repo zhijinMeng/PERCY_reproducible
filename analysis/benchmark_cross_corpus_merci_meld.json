@@ -2,16 +2,16 @@
   "results": [
     {
       "setting": "MERCI in-domain (5-fold grouped CV)",
-      "macro_f1_all": 0.6204094863643969,
-      "macro_f1_consistent": 0.46046046046046046,
-      "macro_f1_conflict": 0.4931216931216931,
-      "ci95_all_low": 0.5557675840369546,
-      "ci95_all_high": 0.6768131466885374,
-      "ci95_consistent_low": 0.3576958846779818,
-      "ci95_consistent_high": 0.5354522040942654,
-      "ci95_conflict_low": 0.37826416873943536,
-      "ci95_conflict_high": 0.5609931144566292,
-      "n_rows": 911
+      "macro_f1_all": 0.6560143532297064,
+      "macro_f1_consistent": 0.4792609940150923,
+      "macro_f1_conflict": 0.48200000000000004,
+      "ci95_all_low": 0.607800514472376,
+      "ci95_all_high": 0.6965369060954822,
+      "ci95_consistent_low": 0.39007215927178246,
+      "ci95_consistent_high": 0.5381637045159472,
+      "ci95_conflict_low": 0.3852377125130932,
+      "ci95_conflict_high": 0.5486325969711351,
+      "n_rows": 1205
     },
     {
       "setting": "MELD -> MERCI transfer",
@@ -22,31 +22,31 @@
         "/home/zhijinmeng/Research/paper_writing/Paper_writing/Claude_Writing/analysis/meld_test_sent_emo.csv"
       ],
       "meld_train_rows": 13708,
-      "macro_f1_all": 0.2888927631910302,
-      "macro_f1_consistent": 0.18827013591411498,
-      "macro_f1_conflict": 0.13109080841638981,
-      "ci95_all_low": 0.24701921866864493,
-      "ci95_all_high": 0.3304250465943417,
-      "ci95_consistent_low": 0.11719110771112612,
-      "ci95_consistent_high": 0.2694632717058346,
-      "ci95_conflict_low": 0.056897919311419035,
-      "ci95_conflict_high": 0.21329064360469838,
-      "n_rows": 911
+      "macro_f1_all": 0.30285717911974486,
+      "macro_f1_consistent": 0.1889238075284587,
+      "macro_f1_conflict": 0.14677993401397657,
+      "ci95_all_low": 0.2685969517171153,
+      "ci95_all_high": 0.3346791000819614,
+      "ci95_consistent_low": 0.12680410812277082,
+      "ci95_consistent_high": 0.2670688226649879,
+      "ci95_conflict_low": 0.07622221415151555,
+      "ci95_conflict_high": 0.22371681823733514,
+      "n_rows": 1205
     },
     {
       "setting": "IEMOCAP -> MERCI transfer",
       "status": "ok",
       "iemocap_train_rows": 7529,
-      "macro_f1_all": 0.3106279497852124,
-      "macro_f1_consistent": 0.2216783216783217,
-      "macro_f1_conflict": 0.2156862745098039,
-      "ci95_all_low": 0.27381580372663605,
-      "ci95_all_high": 0.34562085883904814,
-      "ci95_consistent_low": 0.16244186726111196,
-      "ci95_consistent_high": 0.2855754954169308,
-      "ci95_conflict_low": 0.17266231799650555,
-      "ci95_conflict_high": 0.2608446591519055,
-      "n_rows": 911
+      "macro_f1_all": 0.32315203994699976,
+      "macro_f1_consistent": 0.2286859678164026,
+      "macro_f1_conflict": 0.201818585052118,
+      "ci95_all_low": 0.29102644065748584,
+      "ci95_all_high": 0.34999048004950084,
+      "ci95_consistent_low": 0.17618475707822787,
+      "ci95_consistent_high": 0.2907041319988961,
+      "ci95_conflict_low": 0.15989467966427995,
+      "ci95_conflict_high": 0.24246019764851165,
+      "n_rows": 1205
     }
   ]
 }
